@@ -50,18 +50,22 @@ public class Snake : MonoBehaviour
         // Handle input.
         if (Input.GetKeyDown(KeyCode.UpArrow))
         {
+            if(CurrentDirection == MovementDirection.Down) return;
             CurrentDirection = MovementDirection.Up;
         }
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
+            if(CurrentDirection == MovementDirection.Up) return;
             CurrentDirection = MovementDirection.Down;
         }
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
+            if(CurrentDirection == MovementDirection.Right) return;
             CurrentDirection = MovementDirection.Left;
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
+            if(CurrentDirection == MovementDirection.Left) return;
             CurrentDirection = MovementDirection.Right;
         }
     }
