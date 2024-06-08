@@ -21,25 +21,15 @@ namespace SnakeGame
 
         private List<Tail> _tails = new List<Tail>();
 
-        private MovementDirection CurrentDirection = MovementDirection.None;
-
-
-        private enum MovementDirection
-        {
-            None,
-            Up,
-            Down,
-            Left,
-            Right
-        }
-
+ 
         public void Initialize(float movementPerTick)
         {
             _movementPerTick = movementPerTick;
         }
-        public void Tick()
+
+        public void Tick(Input.MovementDirection currentDirection)
         {
-            Move();
+            Move(currentDirection);
 
             foreach (var tail in _tails)
             {
@@ -47,52 +37,27 @@ namespace SnakeGame
             }
         }
 
-        private void Update()
+        private void Move(Input.MovementDirection currentDirection)
         {
-            // Handle input.
-            if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
+            switch (currentDirection)
             {
-                if (CurrentDirection == MovementDirection.Down) return;
-                CurrentDirection = MovementDirection.Up;
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
-            {
-                if (CurrentDirection == MovementDirection.Up) return;
-                CurrentDirection = MovementDirection.Down;
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow))
-            {
-                if (CurrentDirection == MovementDirection.Right) return;
-                CurrentDirection = MovementDirection.Left;
-            }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.RightArrow))
-            {
-                if (CurrentDirection == MovementDirection.Left) return;
-                CurrentDirection = MovementDirection.Right;
-            }
-        }
-
-        private void Move()
-        {
-            switch (CurrentDirection)
-            {
-                case MovementDirection.Up:
+                case Input.MovementDirection.Up:
                     transform.position += Vector3.forward * _movementPerTick;
                     nextTailPosition = transform.position + Vector3.back * _movementPerTick;
                     break;
-                case MovementDirection.Down:
+                case Input.MovementDirection.Down:
                     transform.position += Vector3.back * _movementPerTick;
                     nextTailPosition = transform.position + Vector3.forward * _movementPerTick;
                     break;
-                case MovementDirection.Left:
+                case Input.MovementDirection.Left:
                     transform.position += Vector3.left * _movementPerTick;
                     nextTailPosition = transform.position + Vector3.right * _movementPerTick;
                     break;
-                case MovementDirection.Right:
+                case Input.MovementDirection.Right:
                     transform.position += Vector3.right * _movementPerTick;
                     nextTailPosition = transform.position + Vector3.left * _movementPerTick;
                     break;
-                case MovementDirection.None:
+                case Input.MovementDirection.None:
                     break;
             }
         }

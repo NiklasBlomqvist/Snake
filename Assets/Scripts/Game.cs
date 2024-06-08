@@ -46,7 +46,7 @@ namespace SnakeGame
             while (!_isGameOver)
             {
                 yield return new WaitForSeconds(TickSpeed);
-                _snake.Tick();
+                _snake.Tick(Input.Instance.CurrentDirection);
             }
         }
 
