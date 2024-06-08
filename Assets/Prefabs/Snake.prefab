@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5ad097f182291443950fe2bd4cb6369, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tailPrefab: {fileID: 2945542298328247432, guid: 3f953b3b5e76cfc448a72080447df1cb, type: 3}
 --- !u!54 &7631087020259317888
 Rigidbody:
   m_ObjectHideFlags: 0
