@@ -14,6 +14,8 @@ public class Game : MonoBehaviour
     private readonly int _boardSize = 5; // [-boardSize, boardSize]
 
     private List<Vector3> _boardPositions = new List<Vector3>(); // X and Y is the positions, Z is if it is occupied
+    
+    private Snake _snake;
 
     void Start()
     {
@@ -33,7 +35,8 @@ public class Game : MonoBehaviour
     private void SpawnSnake()
     {
         var spawnPosition = GetRandomUnoccupiedPosition();
-        Instantiate(snakePrefab, spawnPosition, Quaternion.identity);
+        _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
+        _snake.EatTreat += SpawnTreat;
     }
 
     private void SpawnTreat()

@@ -7,6 +7,8 @@ using UnityEngine;
 public class Snake : MonoBehaviour
 {
 
+    public Action EatTreat;
+
     [SerializeField]
     private GameObject tailPrefab;
 
@@ -99,6 +101,8 @@ public class Snake : MonoBehaviour
         treat.GetEaten();
 
         Grow();
+
+        EatTreat?.Invoke();
     }
 
     private void Grow()
