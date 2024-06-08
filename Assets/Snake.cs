@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -71,4 +72,19 @@ public class Snake : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// OnTriggerEnter is called when the Collider other enters the trigger.
+    /// </summary>
+    /// <param name="other">The other Collider involved in this collision.</param>
+    void OnTriggerEnter(Collider other)
+    {
+        var treat = other.GetComponentInParent<Treat>();
+        if(treat == null) return;
+        Eat(treat);
+    }
+
+    private void Eat(Treat treat)
+    {
+        treat.GetEaten();
+    }
 }
