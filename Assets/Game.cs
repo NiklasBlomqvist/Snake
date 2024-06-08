@@ -5,15 +5,24 @@ using UnityEngine;
 
 public class Game : MonoBehaviour
 {
+    [SerializeField]
+    private GameObject snakePrefab;
 
     [SerializeField]
     private GameObject treatPrefab;
 
-    private readonly int _boardSize = 10;
+    private readonly int _boardSize = 5; // [-boardSize, boardSize]
 
     void Start()
     {
+        SpawnSnake();
         SpawnTreat();
+    }
+
+    private void SpawnSnake()
+    {
+        var spawnPosition = GetRandomPosition();
+        Instantiate(snakePrefab, spawnPosition, Quaternion.identity);
     }
 
     private void SpawnTreat()
@@ -24,8 +33,7 @@ public class Game : MonoBehaviour
 
     private Vector3 GetRandomPosition()
     {
-        // Create a random position in 0,5, 1,5, 2,5, 3,5, 4,5, 5,5, 6,5, 7,5, 8,5, 9,5
-        var randomPos = UnityEngine.Random.Range(0, _boardSize/2) + 0.5f;
+        var randomPos = UnityEngine.Random.Range(0, _boardSize) + 0.5f;
         return new Vector3(randomPos, 0f, randomPos);
     }
 }
