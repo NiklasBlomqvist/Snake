@@ -100,9 +100,18 @@ namespace SnakeGame
             _tails.Add(tail);
         }
 
-        internal bool IsNextMoveValid(SnakeGame.Input.MovementDirection nextMoveDirection)
+        public List<Vector3> GetAllOccupiedPositions()
         {
-            throw new NotImplementedException();
+            var positions = new List<Vector3>();
+
+            positions.Add(transform.position);
+
+            foreach (var tail in _tails)
+            {
+                positions.Add(tail.transform.position);
+            }
+
+            return positions;
         }
     }
 }
