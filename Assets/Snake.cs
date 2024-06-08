@@ -12,12 +12,15 @@ public class Snake : MonoBehaviour
     [SerializeField]
     private GameObject tailPrefab;
 
-    private float TickSpeed = 0.2f; // How often tick and move happens.
-    private float MovementPerTick = 1.0f; // How much the snake moves per tick.
 
     private Vector3 nextTailPosition;
 
+    private float _movementPerTick;
+
+    private List<Tail> _tails = new List<Tail>();
+
     private MovementDirection CurrentDirection = MovementDirection.None;
+
 
     private enum MovementDirection
     {
@@ -28,13 +31,21 @@ public class Snake : MonoBehaviour
         Right
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void Initialize(float movementPerTick)
     {
-        InvokeRepeating(nameof(Tick), 0.0f, TickSpeed);
+        _movementPerTick = movementPerTick;
+    }
+    public void Tick()
+    {
+        Move();
+
+        foreach (var tail in _tails)
+        {
+            tail.Tick();
+        }
     }
 
-    private void Update() 
+    private void Update()
     {
         // Handle input.
         if (Input.GetKeyDown(KeyCode.UpArrow))
@@ -55,30 +66,25 @@ public class Snake : MonoBehaviour
         }
     }
 
-    private void Tick() 
-    {
-        Move();
-    }
-
-    private void Move() 
+    private void Move()
     {
         switch (CurrentDirection)
         {
             case MovementDirection.Up:
-                transform.position += Vector3.forward * MovementPerTick;
-                nextTailPosition = transform.position + Vector3.back * MovementPerTick;
+                transform.position += Vector3.forward * _movementPerTick;
+                nextTailPosition = transform.position + Vector3.back * _movementPerTick;
                 break;
             case MovementDirection.Down:
-                transform.position += Vector3.back * MovementPerTick;
-                nextTailPosition = transform.position + Vector3.forward * MovementPerTick;
+                transform.position += Vector3.back * _movementPerTick;
+                nextTailPosition = transform.position + Vector3.forward * _movementPerTick;
                 break;
             case MovementDirection.Left:
-                transform.position += Vector3.left * MovementPerTick;
-                nextTailPosition = transform.position + Vector3.right * MovementPerTick;
+                transform.position += Vector3.left * _movementPerTick;
+                nextTailPosition = transform.position + Vector3.right * _movementPerTick;
                 break;
             case MovementDirection.Right:
-                transform.position += Vector3.right * MovementPerTick;
-                nextTailPosition = transform.position + Vector3.left * MovementPerTick;
+                transform.position += Vector3.right * _movementPerTick;
+                nextTailPosition = transform.position + Vector3.left * _movementPerTick;
                 break;
             case MovementDirection.None:
                 break;
@@ -92,7 +98,7 @@ public class Snake : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         var treat = other.GetComponentInParent<Treat>();
-        if(treat == null) return;
+        if (treat == null) return;
         Eat(treat);
     }
 
@@ -107,6 +113,19 @@ public class Snake : MonoBehaviour
 
     private void Grow()
     {
-        Instantiate(tailPrefab, new Vector3(nextTailPosition.x, tailPrefab.transform.position.y, nextTailPosition.z), Quaternion.identity, transform);
+        var tail = Instantiate(tailPrefab, new Vector3(nextTailPosition.x, tailPrefab.transform.position.y, nextTailPosition.z), Quaternion.identity).GetComponent<Tail>();
+        
+
+        // If there are no tails, make the tail follow the head. Otherwise, make the tail follow the last tail.
+        if(_tails.Count < 1) 
+        {
+            tail.Follow(transform);
+        }
+        else 
+        {
+            tail.Follow(_tails[_tails.Count - 1].transform);
+        }
+
+        _tails.Add(tail);
     }
 }

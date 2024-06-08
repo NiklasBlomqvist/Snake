@@ -11,6 +11,11 @@ public class Game : MonoBehaviour
     [SerializeField]
     private GameObject treatPrefab;
 
+    private float TickSpeed = 0.2f; // How often tick and move happens.
+    private float MovementPerTick = 1.0f; // How much the snake moves per tick.
+
+    private bool _isGameOver = false;
+
     private readonly int _boardSize = 5; // [-boardSize, boardSize]
 
     private List<Vector3> _boardPositions = new List<Vector3>(); // X and Y is the positions, Z is if it is occupied
@@ -28,14 +33,26 @@ public class Game : MonoBehaviour
             }
         }
 
-        SpawnSnake();
+        SpawnSnake(MovementPerTick);
         SpawnTreat();
+
+        StartCoroutine(Tick());
     }
 
-    private void SpawnSnake()
+    private IEnumerator Tick()
+    {
+        while (!_isGameOver)
+        {
+            yield return new WaitForSeconds(TickSpeed);
+            _snake.Tick();
+        }
+    }
+
+    private void SpawnSnake(float movementPerTick)
     {
         var spawnPosition = GetRandomUnoccupiedPosition();
         _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
+        _snake.Initialize(movementPerTick);
         _snake.EatTreat += SpawnTreat;
     }
 
