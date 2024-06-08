@@ -99,5 +99,10 @@ namespace SnakeGame
 
             _tails.Add(tail);
         }
+
+        internal bool IsNextMoveValid(SnakeGame.Input.MovementDirection nextMoveDirection)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

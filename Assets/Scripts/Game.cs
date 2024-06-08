@@ -46,8 +46,57 @@ namespace SnakeGame
             while (!_isGameOver)
             {
                 yield return new WaitForSeconds(TickSpeed);
-                _snake.Tick(Input.Instance.CurrentDirection);
+
+                // Check if next move will hit a wall or itself
+                var nextMove = Input.Instance.CurrentDirection;
+                if (IsNextMoveValid(nextMove))
+                {
+                    _snake.Tick(nextMove);
+                }
+                else
+                {
+                    _isGameOver = true;
+                    Debug.Log("Game Over!");
+                }
             }
+        }
+
+        private bool IsNextMoveValid(Input.MovementDirection currentDirection)
+        {
+            var nextPosition = _snake.transform.position;
+
+            switch (currentDirection)
+            {
+                case Input.MovementDirection.Up:
+                    nextPosition += Vector3.forward * MovementPerTick;
+                    break;
+                case Input.MovementDirection.Down:
+                    nextPosition += Vector3.back * MovementPerTick;
+                    break;
+                case Input.MovementDirection.Left:
+                    nextPosition += Vector3.left * MovementPerTick;
+                    break;
+                case Input.MovementDirection.Right:
+                    nextPosition += Vector3.right * MovementPerTick;
+                    break;
+                case Input.MovementDirection.None:
+                    break;
+            }
+
+            // Check if next position is outside the board
+            if (nextPosition.x < -_boardSize || nextPosition.x >= _boardSize || nextPosition.z < -_boardSize || nextPosition.z >= _boardSize)
+            {
+                Debug.Log($"Hit wall at next position {nextPosition}.");
+                return false;
+            }
+
+            // Check if next position is occupied
+            // if (_boardPositions.Contains(nextPosition))
+            // {
+            //     return false;
+            // }
+
+            return true;
         }
 
         private void SpawnSnake(float movementPerTick)
