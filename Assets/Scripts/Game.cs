@@ -13,7 +13,7 @@ namespace SnakeGame
         [SerializeField]
         private GameObject treatPrefab;
 
-        private float TickSpeed = 0.2f; // How often tick and move happens.
+        private float TickSpeed = 0.15f; // How often tick and move happens.
         private float MovementPerTick = 1.0f; // How much the snake moves per tick.
         private readonly int _boardSize = 10; // Number of tiles in one axis of the board. The board is a square (_boardSize * _boardSize), starting at bottom left corner (0, 0).
 
