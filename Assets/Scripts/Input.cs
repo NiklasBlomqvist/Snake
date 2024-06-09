@@ -7,11 +7,12 @@ namespace SnakeGame
     {
         public static Input Instance { get; private set; }
 
+        public Vector3 NextDirection { get; private set; }
+
+
         void Awake()
         {
-            CurrentDirection = MovementDirection.None;
-
-            // Singleton pattern
+            // Singleton pattern.
             if (Instance == null)
             {
                 Instance = this;
@@ -20,17 +21,8 @@ namespace SnakeGame
             {
                 Destroy(gameObject);
             }
-        }
 
-        public MovementDirection CurrentDirection { get; private set; }
-
-        public enum MovementDirection
-        {
-            None,
-            Up,
-            Down,
-            Left,
-            Right
+            NextDirection = Vector3.zero;
         }
 
         private void Update()
@@ -40,21 +32,21 @@ namespace SnakeGame
 
         private void HandleInput()
         {
-            if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow) && CurrentDirection != MovementDirection.Down)
+            if (UnityEngine.Input.GetKeyDown(KeyCode.UpArrow))
             {
-                CurrentDirection = MovementDirection.Up;
+                NextDirection = Vector3.forward;
             }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow) && CurrentDirection != MovementDirection.Up)
+            else if (UnityEngine.Input.GetKeyDown(KeyCode.DownArrow))
             {
-                CurrentDirection = MovementDirection.Down;
+                NextDirection = Vector3.back;
             }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow) && CurrentDirection != MovementDirection.Right)
+            else if (UnityEngine.Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                CurrentDirection = MovementDirection.Left;
+                NextDirection = Vector3.left;
             }
-            else if (UnityEngine.Input.GetKeyDown(KeyCode.RightArrow) && CurrentDirection != MovementDirection.Left)
+            else if (UnityEngine.Input.GetKeyDown(KeyCode.RightArrow))
             {
-                CurrentDirection = MovementDirection.Right;
+                NextDirection = Vector3.right;
             }
         }
     }

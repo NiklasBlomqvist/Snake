@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace SnakeGame
@@ -9,27 +7,25 @@ namespace SnakeGame
     public class Snake : MonoBehaviour
     {
 
-        public Action EatTreat;
-
         [SerializeField]
         private GameObject tailPrefab;
 
 
-        private Vector3 nextTailPosition;
+        public Action EatTreat;
+
 
         private float _movementPerTick;
-
         private List<Tail> _tails = new List<Tail>();
 
- 
+
         public void Initialize(float movementPerTick)
         {
             _movementPerTick = movementPerTick;
         }
 
-        public void Tick(Input.MovementDirection currentDirection)
+        public void Tick(Vector3 nextDirection)
         {
-            Move(currentDirection);
+            Move(nextDirection);
 
             foreach (var tail in _tails)
             {
@@ -37,36 +33,12 @@ namespace SnakeGame
             }
         }
 
-        private void Move(Input.MovementDirection currentDirection)
+        private void Move(Vector3 nextDirection)
         {
-            switch (currentDirection)
-            {
-                case Input.MovementDirection.Up:
-                    transform.position += Vector3.forward * _movementPerTick;
-                    nextTailPosition = transform.position + Vector3.back * _movementPerTick;
-                    break;
-                case Input.MovementDirection.Down:
-                    transform.position += Vector3.back * _movementPerTick;
-                    nextTailPosition = transform.position + Vector3.forward * _movementPerTick;
-                    break;
-                case Input.MovementDirection.Left:
-                    transform.position += Vector3.left * _movementPerTick;
-                    nextTailPosition = transform.position + Vector3.right * _movementPerTick;
-                    break;
-                case Input.MovementDirection.Right:
-                    transform.position += Vector3.right * _movementPerTick;
-                    nextTailPosition = transform.position + Vector3.left * _movementPerTick;
-                    break;
-                case Input.MovementDirection.None:
-                    break;
-            }
+            transform.position += nextDirection * _movementPerTick;
         }
 
-        /// <summary>
-        /// OnTriggerEnter is called when the Collider other enters the trigger.
-        /// </summary>
-        /// <param name="other">The other Collider involved in this collision.</param>
-        void OnTriggerEnter(Collider other)
+        private void OnTriggerEnter(Collider other)
         {
             var treat = other.GetComponentInParent<Treat>();
             if (treat == null) return;
@@ -76,42 +48,45 @@ namespace SnakeGame
         private void Eat(Treat treat)
         {
             treat.GetEaten();
-
             Grow();
-
             EatTreat?.Invoke();
         }
 
         private void Grow()
         {
-            var tail = Instantiate(tailPrefab, new Vector3(nextTailPosition.x, tailPrefab.transform.position.y, nextTailPosition.z), Quaternion.identity).GetComponent<Tail>();
-
-
+            var tail = Instantiate(tailPrefab).GetComponent<Tail>();
+            
             // If there are no tails, make the tail follow the head. Otherwise, make the tail follow the last tail.
             if (_tails.Count < 1)
             {
+                tail.transform.position = transform.position;
                 tail.Follow(transform);
             }
             else
             {
+                tail.transform.position = _tails[_tails.Count - 1].transform.position;
                 tail.Follow(_tails[_tails.Count - 1].transform);
             }
 
             _tails.Add(tail);
+
         }
 
-        public List<Vector3> GetAllOccupiedPositions()
+        public Vector3 GetHeadPosition()
         {
-            var positions = new List<Vector3>();
+            return transform.position;
+        }
 
-            positions.Add(transform.position);
+        public List<Vector3> GetTailPositions()
+        {
+            var tailPositions = new List<Vector3>();
 
             foreach (var tail in _tails)
             {
-                positions.Add(tail.transform.position);
+                tailPositions.Add(tail.transform.position);
             }
 
-            return positions;
+            return tailPositions;
         }
     }
 }

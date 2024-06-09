@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,29 +7,24 @@ namespace SnakeGame
 {
     public class Game : MonoBehaviour
     {
+
         [SerializeField]
         private GameObject snakePrefab;
-
         [SerializeField]
         private GameObject treatPrefab;
 
         private float TickSpeed = 0.2f; // How often tick and move happens.
         private float MovementPerTick = 1.0f; // How much the snake moves per tick.
+        private readonly int _boardSize = 10; // Number of tiles in one axis of the board. The board is a square (_boardSize * _boardSize), starting at bottom left corner (0, 0).
 
         private bool _isGameOver = false;
-
-        private readonly int _boardSize = 5; // [-boardSize, boardSize]
-
-        private List<Vector3> _boardPositions = new List<Vector3>();
-        private List<Vector3> _freeBoardPositions = new List<Vector3>();
-        private List<Vector3> _snakeBoardPositions = new List<Vector3>();
-
+        private Dictionary<Vector3, bool> _snakePositions;
         private Snake _snake;
-        private Vector3 _currentTreatPositon;
+        private Vector3 _previousDirection;
 
         void Start()
         {
-            InitializeBoardPositions();
+            InitializeSnakePositions();
 
             SpawnSnake(MovementPerTick);
             SpawnTreat();
@@ -38,17 +32,16 @@ namespace SnakeGame
             StartCoroutine(Tick());
         }
 
-        private void InitializeBoardPositions()
+        private void InitializeSnakePositions()
         {
-            for (int x = -_boardSize; x < _boardSize; x++)
+            _snakePositions = new Dictionary<Vector3, bool>(_boardSize * _boardSize);
+            for (int x = 0; x < _boardSize; x++)
             {
-                for (int z = -_boardSize; z < _boardSize; z++)
+                for (int z = 0; z < _boardSize; z++)
                 {
-                    _boardPositions.Add(new Vector3(x + 0.5f, 0f, z + 0.5f));
+                    _snakePositions.Add(new Vector3(x, 0, z), false);
                 }
             }
-
-            _freeBoardPositions = new List<Vector3>(_boardPositions);
         }
 
         private IEnumerator Tick()
@@ -57,10 +50,14 @@ namespace SnakeGame
             {
                 yield return new WaitForSeconds(TickSpeed);
 
-                UpdateAvailableBoardPositions();
+                UpdateSnakePositions();
 
                 // Check if next move will hit a wall or itself
-                var nextMove = Input.Instance.CurrentDirection;
+                var nextMove = Input.Instance.NextDirection;
+                if(nextMove == -_previousDirection) 
+                {
+                    nextMove = _previousDirection;
+                }
                 if (IsNextMoveValid(nextMove))
                 {
                     _snake.Tick(nextMove);
@@ -70,74 +67,37 @@ namespace SnakeGame
                     _isGameOver = true;
                     Debug.Log("Game Over!");
                 }
+                _previousDirection = nextMove;
             }
         }
 
-        private void UpdateAvailableBoardPositions()
+        private void UpdateSnakePositions()
         {
-            // Remove occupied positions from the list of empty board positions.
-            var occupiedPositions = new List<Vector3>();
-            _snakeBoardPositions.Clear();
-            if (_snake != null) 
-            {
-                _snakeBoardPositions = _snake.GetAllOccupiedPositions();
-                occupiedPositions.AddRange(_snakeBoardPositions);
-            }
-            if (_currentTreatPositon != Vector3.zero)
-                occupiedPositions.Add(_currentTreatPositon);
+            InitializeSnakePositions();
 
-            // Log all occupied positions.
-            Debug.Log("Occupied positions:");
-            foreach (var pos in occupiedPositions)
+            _snakePositions[_snake.GetHeadPosition()] = true;
+            foreach (var tailPosition in _snake.GetTailPositions())
             {
-                Debug.Log(pos);
+                _snakePositions[tailPosition] = true;
             }
-
-            _freeBoardPositions = _boardPositions.Except(occupiedPositions).ToList();
         }
 
-        private bool IsNextMoveValid(Input.MovementDirection currentDirection)
+        private bool IsNextMoveValid(Vector3 nextDirection)
         {
-            if(currentDirection == Input.MovementDirection.None)    
+            if(nextDirection == Vector3.zero)    
                 return true;
 
-            Debug.Log($"Is Next Move Valid? {currentDirection}");
-
-            var nextPosition = _snake.transform.position;
-
-            Debug.Log($"Current position: {_snake.transform.position}");
-
-            switch (currentDirection)
-            {
-                case Input.MovementDirection.Up:
-                    nextPosition += Vector3.forward * MovementPerTick;
-                    break;
-                case Input.MovementDirection.Down:
-                    nextPosition += Vector3.back * MovementPerTick;
-                    break;
-                case Input.MovementDirection.Left:
-                    nextPosition += Vector3.left * MovementPerTick;
-                    break;
-                case Input.MovementDirection.Right:
-                    nextPosition += Vector3.right * MovementPerTick;
-                    break;
-                case Input.MovementDirection.None:
-                    break;
-            }
-
-            Debug.Log($"Next position: {nextPosition}");
+            var nextPosition = _snake.GetHeadPosition() + nextDirection * MovementPerTick;
 
             // Check if next position is outside the board.
-            if (nextPosition.x < -_boardSize || nextPosition.x >= _boardSize || nextPosition.z < -_boardSize || nextPosition.z >= _boardSize)
+            if (nextPosition.x < 0 || nextPosition.x >= _boardSize || nextPosition.z < 0 || nextPosition.z >= _boardSize)
             {
-                Debug.Log($"Hit wall at next position {nextPosition}.");
                 return false;
             }
 
             // // Check if next position is occupied.
-            if (_snakeBoardPositions.Contains(nextPosition))
+            if (_snake.GetTailPositions().Contains(nextPosition))
             {
-                Debug.Log($"Hit itself at next position {nextPosition}.");
                 return false;
             }
 
@@ -146,7 +106,7 @@ namespace SnakeGame
 
         private void SpawnSnake(float movementPerTick)
         {
-            var spawnPosition = GetRandomUnoccupiedPosition();
+            var spawnPosition = GetRandomUnoccupiedPositonBySnake();
             _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
             _snake.Initialize(movementPerTick);
             _snake.EatTreat += SpawnTreat;
@@ -154,19 +114,18 @@ namespace SnakeGame
 
         private void SpawnTreat()
         {
-            var spawnPosition = GetRandomUnoccupiedPosition();
+            var spawnPosition = GetRandomUnoccupiedPositonBySnake();
             Instantiate(treatPrefab, spawnPosition, Quaternion.identity);
-            _currentTreatPositon = spawnPosition;
         }
 
-        private Vector3 GetRandomUnoccupiedPosition()
+        private Vector3 GetRandomUnoccupiedPositonBySnake()
         {
-            if(_freeBoardPositions.Count == 0)
-                throw new Exception("No free board positions left.");
+            // Get all Vector2 types from the dictionary where the value is false.
+            var unoccupiedPositions = _snakePositions.Where(x => x.Value == false).Select(x => x.Key).ToList();
 
-            // Pick random unoccupied position from the list of empty board positions.
-            var randomIndex = UnityEngine.Random.Range(0, _freeBoardPositions.Count);
-            var randomPosition = _freeBoardPositions[randomIndex];
+            // Get a random position from the list of unoccupied positions.
+            var randomIndex = Random.Range(0, unoccupiedPositions.Count);
+            var randomPosition = unoccupiedPositions[randomIndex];
 
             return randomPosition;
         }
