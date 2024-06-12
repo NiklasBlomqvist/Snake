@@ -36,6 +36,7 @@ namespace SnakeGame
         private void Move(Vector3 nextDirection)
         {
             transform.position += nextDirection * _movementPerTick;
+            transform.LookAt(nextDirection + transform.position);
         }
 
         private void OnTriggerEnter(Collider other)
