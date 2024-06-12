@@ -3,29 +3,21 @@ using UnityEngine;
 public class Snake : MonoBehaviour
 {
 
-    private const float MovementSpeed = 8.0f;
-
-    private Vector3 _moveDirection = Vector3.zero;
+    private const float MovementSpeed = 6.0f;
+    private float RotationAnglesPerSecond = 180;
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow)) 
+        if (Input.GetKey(KeyCode.LeftArrow)) 
         {
-            _moveDirection = Vector3.forward;
+            transform.Rotate(Vector3.up, -RotationAnglesPerSecond * Time.deltaTime);
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow)) 
+        else if (Input.GetKey(KeyCode.RightArrow)) 
         {
-            _moveDirection = Vector3.back;
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow)) 
-        {
-            _moveDirection = Vector3.left;
-        }
-        else if (Input.GetKeyDown(KeyCode.RightArrow)) 
-        {
-            _moveDirection = Vector3.right;
+            transform.Rotate(Vector3.up, RotationAnglesPerSecond * Time.deltaTime);
         }
 
-        transform.position += _moveDirection * MovementSpeed * Time.deltaTime;
+        // Move forward
+        transform.position += transform.forward * MovementSpeed * Time.deltaTime;
     }
 }
