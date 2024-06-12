@@ -3,33 +3,47 @@ using UnityEngine;
 public class Snake : MonoBehaviour
 {
 
-    private const float MovementSpeed = 5.0f;
-    private float RotationAnglesPerSecond = 180;
-    private Rigidbody _rBody;
+    [SerializeField]
+    private GameObject snakeTailPrefab;
 
-    /// <summary>
-    /// Awake is called when the script instance is being loaded.
-    /// </summary>
+    private const float MovementSpeed = 5.0f;
+
+    private float RotationAnglesPerSecond = 180;
+
+    private int _tailSize = 6;
+
+    private Transform _previousTail;
+
     void Awake()
     {
-        _rBody = GetComponent<Rigidbody>();
+        _previousTail = transform;
+
+        for (int i = 0; i < _tailSize; i++)
+        {
+            var tail = Instantiate(snakeTailPrefab, _previousTail.position, Quaternion.LookRotation(_previousTail.position)).GetComponent<Tail>();
+            
+            tail.Init(_previousTail);
+
+            _previousTail = tail.transform;
+        }
+
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        if (Input.GetKey(KeyCode.LeftArrow)) 
+        if (Input.GetKey(KeyCode.LeftArrow))
         {
             // Rotate left 
-            _rBody.MoveRotation(Quaternion.Euler(0, -RotationAnglesPerSecond * Time.deltaTime, 0) * transform.rotation);
+            transform.Rotate(0, -RotationAnglesPerSecond * Time.deltaTime, 0);
 
         }
-        else if (Input.GetKey(KeyCode.RightArrow)) 
+        else if (Input.GetKey(KeyCode.RightArrow))
         {
             // Rotate right
-            _rBody.MoveRotation(Quaternion.Euler(0, RotationAnglesPerSecond * Time.deltaTime, 0) * transform.rotation);
+            transform.Rotate(0, RotationAnglesPerSecond * Time.deltaTime, 0);
         }
 
         // Move forward
-        _rBody.MovePosition(transform.position + transform.forward * MovementSpeed * Time.deltaTime);
+        transform.Translate(Vector3.forward * MovementSpeed * Time.deltaTime);
     }
 }
