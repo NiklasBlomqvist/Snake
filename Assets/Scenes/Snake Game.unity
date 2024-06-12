@@ -415,6 +415,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 511e05d8955417d49a600ced85074f37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  boardSize: 10
+  tickSpeed: 0.15
   board: {fileID: 1774532626}
   snakePrefab: {fileID: 540562292215279443, guid: d566002b53ca4b74f936087ee55ca4e5, type: 3}
   treatPrefab: {fileID: 2442481697039563211, guid: 1b3212d9903cb8a42a4f3000162a6544, type: 3}
