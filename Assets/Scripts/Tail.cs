@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Tail : MonoBehaviour
@@ -16,9 +14,6 @@ public class Tail : MonoBehaviour
     void Update()
     {
         // Move forward
-        transform.position += transform.forward * MovementSpeed * Time.deltaTime;
-        transform.rotation = Quaternion.LookRotation(_targetTransform.position - transform.position);
-
-        // transform.position = Vector3.Lerp(transform.position, _targetTransform.position, Time.deltaTime * MovementSpeed);
+        transform.position = Vector3.Lerp(transform.position, _targetTransform.position, Time.deltaTime * MovementSpeed * 2f);
     }
 }
