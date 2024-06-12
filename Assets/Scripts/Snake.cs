@@ -10,7 +10,7 @@ public class Snake : MonoBehaviour
 
     private float RotationAnglesPerSecond = 180;
 
-    private int _tailSize = 6;
+    private int _tailSize = 100;
 
     private Transform _previousTail;
 
@@ -20,7 +20,7 @@ public class Snake : MonoBehaviour
 
         for (int i = 0; i < _tailSize; i++)
         {
-            var tail = Instantiate(snakeTailPrefab, _previousTail.position, Quaternion.LookRotation(_previousTail.position)).GetComponent<Tail>();
+            var tail = Instantiate(snakeTailPrefab, _previousTail.position, Quaternion.identity).GetComponent<Tail>();
             
             tail.Init(_previousTail);
 

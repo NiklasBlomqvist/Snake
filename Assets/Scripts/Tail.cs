@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Tail : MonoBehaviour
 {
+    private const float MovementSpeed = 5f; 
+
     private Transform _targetTransform;
 
     public void Init(Transform targetTransform)
@@ -13,6 +15,10 @@ public class Tail : MonoBehaviour
 
     void Update()
     {
-        transform.position = Vector3.Lerp(transform.position, _targetTransform.position, Time.deltaTime * 5f);
+        // Move forward
+        transform.position += transform.forward * MovementSpeed * Time.deltaTime;
+        transform.rotation = Quaternion.LookRotation(_targetTransform.position - transform.position);
+
+        // transform.position = Vector3.Lerp(transform.position, _targetTransform.position, Time.deltaTime * MovementSpeed);
     }
 }
