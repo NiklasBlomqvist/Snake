@@ -25,8 +25,9 @@ public class Game : MonoBehaviour
     private Snake _snake;
     private Treat _treat;
 
-    private bool gamePaused;
+    private bool _gamePaused;
     private bool _gameOver;
+    private bool _gameStarted;
 
     void Awake()
     {
@@ -37,14 +38,14 @@ public class Game : MonoBehaviour
     private void Update()
     {
         // Pause game.
-        if (!_gameOver && Input.GetKeyDown(KeyCode.Escape))
+        if (!_gameOver && _gameStarted && Input.GetKeyDown(KeyCode.Escape))
         {
-            gamePaused = !gamePaused;
+            _gamePaused = !_gamePaused;
             mainMenu.ToggleMenu(_pauseMessage);
             Time.timeScale = mainMenu.IsMenuActive ? 0 : 1;
         } 
         // Start game.
-        else if(!gamePaused && mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
+        else if(!_gamePaused && mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
         {
             StartGame();
             mainMenu.ToggleMenu(_gameOverMessage);
@@ -54,6 +55,7 @@ public class Game : MonoBehaviour
     public void StartGame() 
     {
         _gameOver = false;
+        _gameStarted = true;
         Time.timeScale = 1;
         SpawnSnake();
         SpawnTreat();
@@ -72,7 +74,10 @@ public class Game : MonoBehaviour
 
     private void OnGameOver()
     {
+        Debug.LogError("Game Over");
+
         _gameOver = true;
+        _gameStarted = false;
         Destroy(_snake.gameObject);
         Destroy(_treat.gameObject);
         mainMenu.ToggleMenu(_gameOverMessage);
