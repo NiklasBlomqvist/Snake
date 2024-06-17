@@ -12,6 +12,7 @@ public class Game : MonoBehaviour
 
     private int _boardSize = 5;
     private Snake _snake;
+    private Treat _treat;
 
     /// <summary>
     /// Awake is called when the script instance is being loaded.
@@ -26,11 +27,23 @@ public class Game : MonoBehaviour
     {
         // Instatiate snake in random position within board
         var minOffsetFromBorder = 2f;
-        _snake = Instantiate(snakePrefab, new Vector3(UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder), 0, UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder)), Quaternion.identity).GetComponent<Snake>();
+        var spawnPosition = new Vector3(UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder), 0, UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder));
+        _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
     }
 
     private void SpawnTreat()
     {
+        var minOffsetFromBorder = 1f;
         
+        // random position that is not on the snake
+        Vector3 spawnPosition;
+        do
+        {
+            spawnPosition = new Vector3(UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder), 0, UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder));
+        } while (Vector3.Distance(spawnPosition, _snake.transform.position) < 1f);
+        
+
+
+        _treat = Instantiate(treatPrefab, spawnPosition, Quaternion.identity).GetComponent<Treat>();
     }
 }
