@@ -1,8 +1,12 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class Menu : MonoBehaviour
 {
+    [SerializeField]
+    private Volume postProcessingVolume;
+
     [SerializeField]
     private TMP_Text text;
 
@@ -22,5 +26,7 @@ public class Menu : MonoBehaviour
             text.SetText(message);
 
         _menuCanvas.enabled = !_menuCanvas.enabled; 
+
+        postProcessingVolume.enabled = _menuCanvas.enabled;
     }
 }
