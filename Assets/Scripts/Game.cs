@@ -17,10 +17,7 @@ public class Game : MonoBehaviour
     private Snake _snake;
     private Treat _treat;
 
-    /// <summary>
-    /// Awake is called when the script instance is being loaded.
-    /// </summary>
-    void Awake()
+    public void StartGame() 
     {
         SpawnSnake();
         SpawnTreat();
