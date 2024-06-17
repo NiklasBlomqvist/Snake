@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Snake : MonoBehaviour
@@ -5,6 +6,8 @@ public class Snake : MonoBehaviour
 
     [SerializeField]
     private GameObject snakeTailPrefab;
+
+    public Action EatTreat;
 
     private const float MovementSpeed = 5.0f;
 
@@ -48,5 +51,24 @@ public class Snake : MonoBehaviour
 
         // Move forward
         transform.Translate(Vector3.forward * MovementSpeed * Time.deltaTime);
+    }
+
+    /// <summary>
+    /// OnTriggerEnter is called when the Collider other enters the trigger.
+    /// </summary>
+    /// <param name="other">The other Collider involved in this collision.</param>
+    void OnTriggerEnter(Collider other)
+    {
+        var treat = other.GetComponentInParent<Treat>();
+        if(treat != null)
+        {
+            // Destroy treat
+            Destroy(treat.gameObject);
+
+            // Grow snake
+            GrowSnake(1);
+
+            EatTreat?.Invoke();
+        }
     }
 }
