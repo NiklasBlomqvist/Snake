@@ -10,8 +10,6 @@ public class Snake : MonoBehaviour
 
     public Action EatTreat;
 
-    private const float MovementSpeed = 5.0f;
-
     private float RotationSpeed = 360f;
 
     private int _tailStartSize = 5;
@@ -20,9 +18,11 @@ public class Snake : MonoBehaviour
 
     private Transform _previousTail;
     private Transform _tailTransform;
+    private float _movementSpeed;
 
-    void Awake()
+    public void Init(float movementSpeed)
     {
+        _movementSpeed = movementSpeed;
         GrowSnake(_tailStartSize);
     }
 
@@ -39,7 +39,7 @@ public class Snake : MonoBehaviour
         for (int i = 0; i < growSize; i++)
         {
             var tail = Instantiate(snakeTailPrefab, _previousTail.position, Quaternion.identity, _tailTransform).GetComponent<Tail>();
-            tail.Init(_previousTail);
+            tail.Init(_previousTail, _movementSpeed);
             _tails.Add(tail);
             _previousTail = tail.transform;
         }
@@ -60,7 +60,7 @@ public class Snake : MonoBehaviour
         }
 
         // Move forward
-        transform.Translate(Vector3.forward * MovementSpeed * Time.deltaTime);
+        transform.Translate(Vector3.forward * _movementSpeed * Time.deltaTime);
     }
 
     /// <summary>

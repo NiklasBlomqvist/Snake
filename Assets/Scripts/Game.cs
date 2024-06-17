@@ -11,6 +11,9 @@ public class Game : MonoBehaviour
     private GameObject treatPrefab;
 
     private int _boardSize = 5;
+
+    private float SnakeMovementSpeed = 5.0f;
+
     private Snake _snake;
     private Treat _treat;
 
@@ -29,6 +32,7 @@ public class Game : MonoBehaviour
         var minOffsetFromBorder = 2f;
         var spawnPosition = new Vector3(UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder), snakePrefab.transform.position.y, UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder));
         _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
+        _snake.Init(SnakeMovementSpeed);
         _snake.EatTreat += OnEatTreat;
     }
 
