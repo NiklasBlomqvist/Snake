@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Snake : MonoBehaviour
@@ -14,6 +15,8 @@ public class Snake : MonoBehaviour
     private float RotationSpeed = 360f;
 
     private int _tailStartSize = 5;
+
+    private List<Tail> _tails = new List<Tail>();
 
     private Transform _previousTail;
     private Transform _tailTransform;
@@ -37,6 +40,7 @@ public class Snake : MonoBehaviour
         {
             var tail = Instantiate(snakeTailPrefab, _previousTail.position, Quaternion.identity, _tailTransform).GetComponent<Tail>();
             tail.Init(_previousTail);
+            _tails.Add(tail);
             _previousTail = tail.transform;
         }
     }
@@ -81,8 +85,29 @@ public class Snake : MonoBehaviour
         if(wall != null)
         {
             // Destroy snake
-            Destroy(this.gameObject);
+            Destroy(gameObject);
             Debug.LogError("Game Over!");
+        }
+
+        var collidedTail = other.GetComponent<Tail>();
+        if(collidedTail != null)
+        {
+            // Check if tail is part of the first instantiated tails
+            for (int i = 0; i < _tails.Count; i++)
+            {
+                var tail = _tails[i];
+                if(i <= _tailStartSize)
+                {
+                    continue;
+                }
+                else if(tail == collidedTail)
+                {
+                    // Destroy snake
+                    Destroy(gameObject);
+                    Debug.LogError("Game Over!");
+                    break;
+                }
+            }
         }
     }
 }
