@@ -76,5 +76,13 @@ public class Snake : MonoBehaviour
 
             EatTreat?.Invoke();
         }
+
+        var wall = other.GetComponent<Wall>();
+        if(wall != null)
+        {
+            // Destroy snake
+            Destroy(this.gameObject);
+            Debug.LogError("Game Over!");
+        }
     }
 }

@@ -13,6 +13,12 @@ public class Tail : MonoBehaviour
 
     void Update()
     {
+        if(_targetTransform == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         // Move forward
         transform.position = Vector3.Lerp(transform.position, _targetTransform.position, Time.deltaTime * MovementSpeed * 2f);
     }
