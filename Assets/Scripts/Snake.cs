@@ -8,7 +8,7 @@ public class Snake : MonoBehaviour
 
     private const float MovementSpeed = 5.0f;
 
-    private float RotationAnglesPerSecond = 180;
+    private float RotationSpeed = 360f;
 
     private int _tailSize = 10;
 
@@ -26,21 +26,20 @@ public class Snake : MonoBehaviour
 
             _previousTail = tail.transform;
         }
-
     }
 
     void Update()
     {
+        // Handle input.
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            // Rotate left 
-            transform.Rotate(0, -RotationAnglesPerSecond * Time.deltaTime, 0);
-
+            // Rotate angle left
+            transform.Rotate(Vector3.up, -RotationSpeed * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
-            // Rotate right
-            transform.Rotate(0, RotationAnglesPerSecond * Time.deltaTime, 0);
+            // Rotate angle right
+            transform.Rotate(Vector3.up, RotationSpeed * Time.deltaTime);
         }
 
         // Move forward
