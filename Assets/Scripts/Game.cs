@@ -18,10 +18,6 @@ public class Game : MonoBehaviour
 
     private float SnakeMovementSpeed = 5.0f;
 
-    private string _gameOverMessage = "Game Over - Press SPACE to start a new game.";
-    private string _startMessage = "Press SPACE to start a new game.";
-    private string _pauseMessage = "Game Paused, Press ESC to resume.";
-
     private Snake _snake;
     private Treat _treat;
 
@@ -29,10 +25,9 @@ public class Game : MonoBehaviour
     private bool _gameOver;
     private bool _gameStarted;
 
-    void Awake()
+    void Start()
     {
-        mainMenu.ToggleMenu(_startMessage);
-        Time.timeScale = mainMenu.IsMenuActive ? 0 : 1;
+        mainMenu.StartMenu();
     }
      
     private void Update()
@@ -41,14 +36,20 @@ public class Game : MonoBehaviour
         if (!_gameOver && _gameStarted && Input.GetKeyDown(KeyCode.Escape))
         {
             _gamePaused = !_gamePaused;
-            mainMenu.ToggleMenu(_pauseMessage);
-            Time.timeScale = mainMenu.IsMenuActive ? 0 : 1;
+            if (_gamePaused)
+            {
+                mainMenu.PauseMenu();
+            }
+            else
+            {
+                mainMenu.HideMenu();
+            }
         } 
         // Start game.
         else if(!_gamePaused && mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
         {
             StartGame();
-            mainMenu.ToggleMenu(_gameOverMessage);
+            mainMenu.HideMenu();
         }
     }
 
@@ -56,7 +57,6 @@ public class Game : MonoBehaviour
     {
         _gameOver = false;
         _gameStarted = true;
-        Time.timeScale = 1;
         SpawnSnake();
         SpawnTreat();
     }
@@ -80,7 +80,8 @@ public class Game : MonoBehaviour
         _gameStarted = false;
         Destroy(_snake.gameObject);
         Destroy(_treat.gameObject);
-        mainMenu.ToggleMenu(_gameOverMessage);
+
+        mainMenu.GameOverMenu();
     }
 
     private void OnEatTreat()

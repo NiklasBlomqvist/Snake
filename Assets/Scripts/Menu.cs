@@ -8,11 +8,18 @@ public class Menu : MonoBehaviour
     private Volume postProcessingVolume;
 
     [SerializeField]
-    private TMP_Text text;
+    private TMP_Text menuText;
+
+    public bool IsMenuActive => _menuCanvas.enabled;
+
 
     private Canvas _menuCanvas;
 
-    public bool IsMenuActive => _menuCanvas.enabled;
+    private string _pauseMessage = "Game Paused, Press ESC to resume.";
+
+    private string _startMessage = "Press SPACE to start a new game.";
+
+    private string _gameOverMessage = "Game Over - Press SPACE to start a new game.";
 
     void Awake()
     {
@@ -20,13 +27,34 @@ public class Menu : MonoBehaviour
         _menuCanvas.enabled = false;
     }
 
-    public void ToggleMenu(string message = "") 
+    public void PauseMenu() 
     {
-        if(!string.IsNullOrEmpty(message))
-            text.SetText(message);
+        menuText.text = _pauseMessage;
+        _menuCanvas.enabled = true;
+        postProcessingVolume.enabled = true;
+        Time.timeScale = 0;
+    }
 
-        _menuCanvas.enabled = !_menuCanvas.enabled; 
+    public void HideMenu() 
+    {
+        _menuCanvas.enabled = false;
+        postProcessingVolume.enabled = false;
+        Time.timeScale = 1;
+    }
 
-        postProcessingVolume.enabled = _menuCanvas.enabled;
+    public void StartMenu() 
+    {
+        menuText.text = _startMessage;
+        _menuCanvas.enabled = true;
+        postProcessingVolume.enabled = true;
+        Time.timeScale = 0;
+    }
+
+    public void GameOverMenu() 
+    {
+        menuText.text = _gameOverMessage;
+        _menuCanvas.enabled = true;
+        postProcessingVolume.enabled = true;
+        Time.timeScale = 0;
     }
 }

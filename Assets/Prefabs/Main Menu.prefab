@@ -333,7 +333,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   postProcessingVolume: {fileID: 7274569754718834729}
-  text: {fileID: 1706702422271787693}
+  menuText: {fileID: 1706702422271787693}
 --- !u!1 &6210284362813004117
 GameObject:
   m_ObjectHideFlags: 0
