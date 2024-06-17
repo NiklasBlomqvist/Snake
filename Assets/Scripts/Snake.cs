@@ -10,20 +10,24 @@ public class Snake : MonoBehaviour
 
     private float RotationSpeed = 360f;
 
-    private int _tailSize = 10;
+    private int _tailStartSize = 5;
 
     private Transform _previousTail;
 
     void Awake()
     {
-        _previousTail = transform;
+        GrowSnake(_tailStartSize);
+    }
 
-        for (int i = 0; i < _tailSize; i++)
+    private void GrowSnake(float growSize)
+    {
+        if(_previousTail == null)
+            _previousTail = transform;
+
+        for (int i = 0; i < growSize; i++)
         {
             var tail = Instantiate(snakeTailPrefab, _previousTail.position, Quaternion.identity).GetComponent<Tail>();
-
             tail.Init(_previousTail);
-
             _previousTail = tail.transform;
         }
     }
