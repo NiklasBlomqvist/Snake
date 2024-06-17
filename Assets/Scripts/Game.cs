@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -24,6 +26,7 @@ public class Game : MonoBehaviour
     private bool _gamePaused;
     private bool _gameOver;
     private bool _gameStarted;
+    private Coroutine _gameOverCoroutine;
 
     void Start()
     {
@@ -31,6 +34,14 @@ public class Game : MonoBehaviour
     }
      
     private void Update()
+    {
+        if(_gameOverCoroutine != null)
+            return;
+
+        HandleInput();
+    }
+
+    private void HandleInput()
     {
         // Pause game.
         if (!_gameOver && _gameStarted && Input.GetKeyDown(KeyCode.Escape))
@@ -44,9 +55,9 @@ public class Game : MonoBehaviour
             {
                 mainMenu.HideMenu();
             }
-        } 
+        }
         // Start game.
-        else if(!_gamePaused && mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
+        else if (!_gamePaused && mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
         {
             StartGame();
             mainMenu.HideMenu();
@@ -78,10 +89,25 @@ public class Game : MonoBehaviour
 
         _gameOver = true;
         _gameStarted = false;
-        Destroy(_snake.gameObject);
-        Destroy(_treat.gameObject);
+
+        var tails = _snake.GetTails();
+
+        _gameOverCoroutine = StartCoroutine(GameOverRoutine(tails, _snake, _treat));
+    }
+
+    private IEnumerator GameOverRoutine(List<Tail> tails, Snake snake, Treat treat)
+    {
+        Destroy(snake.gameObject);
+        Destroy(treat.gameObject);
+
+        foreach (var tail in tails)
+        {
+            Destroy(tail.gameObject);
+            yield return new WaitForSeconds(0.05f);
+        }
 
         mainMenu.GameOverMenu();
+        _gameOverCoroutine = null;
     }
 
     private void OnEatTreat()

@@ -64,6 +64,11 @@ public class Snake : MonoBehaviour
         transform.Translate(Vector3.forward * _movementSpeed * Time.deltaTime);
     }
 
+    public List<Tail> GetTails()
+    {
+        return _tails;
+    }
+
     /// <summary>
     /// OnTriggerEnter is called when the Collider other enters the trigger.
     /// </summary>
