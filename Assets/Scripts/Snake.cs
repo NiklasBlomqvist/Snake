@@ -16,6 +16,7 @@ public class Snake : MonoBehaviour
     private int _tailStartSize = 5;
 
     private Transform _previousTail;
+    private Transform _tailTransform;
 
     void Awake()
     {
@@ -24,12 +25,17 @@ public class Snake : MonoBehaviour
 
     private void GrowSnake(float growSize)
     {
-        if(_previousTail == null)
+        if(_previousTail == null) 
+        {
             _previousTail = transform;
+            
+            // Create empy game object to hold the tail.
+            _tailTransform = new GameObject("Tail").transform;
+        }
 
         for (int i = 0; i < growSize; i++)
         {
-            var tail = Instantiate(snakeTailPrefab, _previousTail.position, Quaternion.identity).GetComponent<Tail>();
+            var tail = Instantiate(snakeTailPrefab, _previousTail.position, Quaternion.identity, _tailTransform).GetComponent<Tail>();
             tail.Init(_previousTail);
             _previousTail = tail.transform;
         }
