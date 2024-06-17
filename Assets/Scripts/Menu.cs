@@ -1,29 +1,26 @@
-using System;
+using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
 {
-
     [SerializeField]
-    private Game game;
+    private TMP_Text text;
+
     private Canvas _menuCanvas;
 
-    /// <summary>
-    /// Awake is called when the script instance is being loaded.
-    /// </summary>
+    public bool IsMenuActive => _menuCanvas.enabled;
+
     void Awake()
     {
-        GetComponentInChildren<Button>().onClick.AddListener(StartGame);
         _menuCanvas = GetComponentInChildren<Canvas>();
-
-        Time.timeScale = 0;
-        game.StartGame();
+        _menuCanvas.enabled = false;
     }
 
-    private void StartGame()
+    public void ToggleMenu(string message = "") 
     {
-        Time.timeScale = 1.0f;
-        _menuCanvas.enabled = false;
+        if(!string.IsNullOrEmpty(message))
+            text.SetText(message);
+
+        _menuCanvas.enabled = !_menuCanvas.enabled; 
     }
 }

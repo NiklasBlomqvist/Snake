@@ -9,6 +9,7 @@ public class Snake : MonoBehaviour
     private GameObject snakeTailPrefab;
 
     public Action EatTreat;
+    public Action GameOver;
 
     private float RotationSpeed = 360f;
 
@@ -84,9 +85,7 @@ public class Snake : MonoBehaviour
         var wall = other.GetComponent<Wall>();
         if(wall != null)
         {
-            // Destroy snake
-            Destroy(gameObject);
-            Debug.LogError("Game Over!");
+            GameOver?.Invoke();
         }
 
         var collidedTail = other.GetComponent<Tail>();
@@ -102,9 +101,7 @@ public class Snake : MonoBehaviour
                 }
                 else if(tail == collidedTail)
                 {
-                    // Destroy snake
-                    Destroy(gameObject);
-                    Debug.LogError("Game Over!");
+                    GameOver?.Invoke();
                     break;
                 }
             }
