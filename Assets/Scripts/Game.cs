@@ -11,6 +11,9 @@ public class Game : MonoBehaviour
     private Menu mainMenu;
 
     [SerializeField]
+    private Overlay overlay;
+
+    [SerializeField]
     private GameObject snakePrefab;
 
     [SerializeField]
@@ -26,6 +29,8 @@ public class Game : MonoBehaviour
 
     private const int TailStartSize = 3;
 
+    private const float SlowtimeDuration = 0.5f;
+
     private Snake _snake;
     private Treat _treat;
 
@@ -33,6 +38,8 @@ public class Game : MonoBehaviour
     private bool _gameOver;
     private bool _gameStarted;
     private Coroutine _gameOverCoroutine;
+    private float _slowTimeUsed;
+    private bool _slowTimeActive;
 
     void Start()
     {
@@ -45,6 +52,25 @@ public class Game : MonoBehaviour
             return;
 
         HandleInput();
+
+        if(_slowTimeActive)
+        {
+            _slowTimeUsed += Time.deltaTime;
+            overlay.SetFill(1 - (_slowTimeUsed / SlowtimeDuration));
+
+            if(_slowTimeUsed >= SlowtimeDuration)
+            {
+                SlowTime(false);
+            }
+        }
+        else 
+        {
+            if(_slowTimeUsed > 0f) 
+            {
+                _slowTimeUsed -= Time.deltaTime;
+                overlay.SetFill(1 - (_slowTimeUsed / SlowtimeDuration));
+            }
+        }
     }
 
     private void HandleInput()
@@ -62,14 +88,14 @@ public class Game : MonoBehaviour
                 mainMenu.HideMenu();
             }
         }
-        // Slowmo
-        else if(!mainMenu.IsMenuActive && Input.GetKey(KeyCode.Space)) 
+        // Slow Time
+        else if(!mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
         {
-            Time.timeScale = SnakeSlowMotionTimeScale;
+            SlowTime(true);
         }
         else if(!mainMenu.IsMenuActive && Input.GetKeyUp(KeyCode.Space)) 
         {
-            Time.timeScale = 1f;
+            SlowTime(false);
         }
         // Start game.
         else if (!_gamePaused && mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
@@ -77,6 +103,12 @@ public class Game : MonoBehaviour
             StartGame();
             mainMenu.HideMenu();
         }
+    }
+
+    private void SlowTime(bool slowTimeActive)
+    {
+        _slowTimeActive = slowTimeActive;
+        Time.timeScale = slowTimeActive ? SnakeSlowMotionTimeScale : 1f;
     }
 
     public void StartGame() 
