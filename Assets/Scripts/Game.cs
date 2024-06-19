@@ -14,15 +14,12 @@ public class Game : MonoBehaviour
     private Overlay overlay;
 
     [SerializeField]
-    private Board board;
-
-    [SerializeField]
     private GameObject snakePrefab;
 
     [SerializeField]
     private GameObject treatPrefab;
 
-    private const int BoardSize = 12; // Needs to be an even number.
+    private const int BoardSize = 12; 
 
     private const int TailStartSize = 3;
 
@@ -44,11 +41,6 @@ public class Game : MonoBehaviour
     private Coroutine _gameOverCoroutine;
     private float _slowTimeUsed;
     private bool _slowTimeActive;
-
-    void Awake()
-    {
-        board.SetSize(BoardSize);        
-    }
 
     void Start()
     {
