@@ -79,10 +79,6 @@ public class Snake : MonoBehaviour
         return _snakeTransform;
     }
 
-    /// <summary>
-    /// OnTriggerEnter is called when the Collider other enters the trigger.
-    /// </summary>
-    /// <param name="other">The other Collider involved in this collision.</param>
     void OnTriggerEnter(Collider other)
     {
         var treat = other.GetComponentInParent<Treat>();
@@ -97,14 +93,12 @@ public class Snake : MonoBehaviour
             EatTreat?.Invoke();
         }
 
-        var outsideOfBounds = other.GetComponent<OutsideOfBounds>();
-        if(outsideOfBounds != null)
+        if(other.TryGetComponent<OutsideOfBounds>(out var outsideOfBounds))
         {
             GameOver?.Invoke();
         }
 
-        var collidedTail = other.GetComponent<Tail>();
-        if(collidedTail != null)
+        if(other.TryGetComponent<Tail>(out var collidedTail))
         {
             // Check if tail is part of the first instantiated tails
             for (int i = 0; i < _tails.Count; i++)
