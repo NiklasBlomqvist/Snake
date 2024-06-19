@@ -97,12 +97,6 @@ public class Snake : MonoBehaviour
             EatTreat?.Invoke();
         }
 
-        var wall = other.GetComponent<Wall>();
-        if(wall != null)
-        {
-            GameOver?.Invoke();
-        }
-
         var collidedTail = other.GetComponent<Tail>();
         if(collidedTail != null)
         {

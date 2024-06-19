@@ -30,14 +30,4 @@ public class Tail : MonoBehaviour
             transform.position += _currentDirection.normalized * Time.deltaTime * _movementSpeed;
         }
     }
-
-    void OnTriggerEnter(Collider other)
-    {
-        var wall = other.GetComponent<Wall>();
-        if (wall != null)
-        {
-            // Destroy tail when it hits a wall
-            Destroy(gameObject);
-        }        
-    }
 }
