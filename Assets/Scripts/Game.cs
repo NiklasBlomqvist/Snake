@@ -16,9 +16,15 @@ public class Game : MonoBehaviour
     [SerializeField]
     private GameObject treatPrefab;
 
-    private int _boardSize = 5;
+    private const int BoardSize = 5;
 
-    private float SnakeMovementSpeed = 5.0f;
+    private const float SnakeMovementSpeed = 5.0f;
+
+    private const float SnakeRotationSpeed = 450f;
+
+    private const float SnakeSlowMotionTimeScale = 0.5f;
+
+    private const int TailStartSize = 5;
 
     private Snake _snake;
     private Treat _treat;
@@ -56,6 +62,15 @@ public class Game : MonoBehaviour
                 mainMenu.HideMenu();
             }
         }
+        // Slowmo
+        else if(!mainMenu.IsMenuActive && Input.GetKey(KeyCode.Space)) 
+        {
+            Time.timeScale = SnakeSlowMotionTimeScale;
+        }
+        else if(!mainMenu.IsMenuActive && Input.GetKeyUp(KeyCode.Space)) 
+        {
+            Time.timeScale = 1f;
+        }
         // Start game.
         else if (!_gamePaused && mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
         {
@@ -76,9 +91,9 @@ public class Game : MonoBehaviour
     {
         // Instatiate snake in random position within board
         var minOffsetFromBorder = 4f;
-        var spawnPosition = new Vector3(UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder), snakePrefab.transform.position.y, UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder));
+        var spawnPosition = new Vector3(UnityEngine.Random.Range(-BoardSize + minOffsetFromBorder, BoardSize - minOffsetFromBorder), snakePrefab.transform.position.y, UnityEngine.Random.Range(-BoardSize + minOffsetFromBorder, BoardSize - minOffsetFromBorder));
         _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
-        _snake.Init(SnakeMovementSpeed);
+        _snake.Init(SnakeMovementSpeed, SnakeRotationSpeed, TailStartSize);
         _snake.GameOver += OnGameOver;
         _snake.EatTreat += OnEatTreat;
     }
@@ -124,7 +139,7 @@ public class Game : MonoBehaviour
         Vector3 spawnPosition;
         do
         {
-            spawnPosition = new Vector3(UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder), treatPrefab.transform.position.y, UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder));
+            spawnPosition = new Vector3(UnityEngine.Random.Range(-BoardSize + minOffsetFromBorder, BoardSize - minOffsetFromBorder), treatPrefab.transform.position.y, UnityEngine.Random.Range(-BoardSize + minOffsetFromBorder, BoardSize - minOffsetFromBorder));
         } while (_snake.GetSnakeTransforms().Exists(s => Vector3.Distance(spawnPosition, s.position) < minDistanceFromSnake));
         
         _treat = Instantiate(treatPrefab, spawnPosition, Quaternion.identity).GetComponent<Treat>();

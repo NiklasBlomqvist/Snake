@@ -11,21 +11,21 @@ public class Snake : MonoBehaviour
     public Action EatTreat;
     public Action GameOver;
 
-    private float RotationSpeed = 360f;
-
-    private int _tailStartSize = 5;
-
     private List<Transform> _snakeTransform = new List<Transform>();
     private List<Tail> _tails = new List<Tail>();
 
     private Transform _previousTail;
     private Transform _tailTransform;
     private float _movementSpeed;
+    private float _rotationSpeed;
+    private int _tailStartSize;
 
-    public void Init(float movementSpeed)
+    public void Init(float movementSpeed, float rotationSpeed, int tailStartSize)
     {
         _movementSpeed = movementSpeed;
-        
+        _rotationSpeed = rotationSpeed;
+        _tailStartSize = tailStartSize;
+
         _snakeTransform.Add(transform); // Add head to snake positions.
 
         GrowSnake(_tailStartSize);
@@ -57,12 +57,12 @@ public class Snake : MonoBehaviour
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             // Rotate angle left
-            transform.Rotate(Vector3.up, -RotationSpeed * Time.deltaTime);
+            transform.Rotate(Vector3.up, -_rotationSpeed * Time.deltaTime);
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             // Rotate angle right
-            transform.Rotate(Vector3.up, RotationSpeed * Time.deltaTime);
+            transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime);
         }
 
         // Move forward
