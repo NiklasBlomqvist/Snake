@@ -14,9 +14,12 @@ public class Tail : MonoBehaviour
 
     void Update()
     {
+        // Create a ping pong effect on the movement speed - this will make the tail move faster and slower.
+        var movementSpeedMultiplier = 1.3f + Mathf.PingPong(Time.time * 4f, 2f);
+
         if(_targetTransform != null)  
         {
-            transform.position = Vector3.Lerp(transform.position, _targetTransform.position, Time.deltaTime * _movementSpeed * 2);
+            transform.position = Vector3.Lerp(transform.position, _targetTransform.position, Time.deltaTime * _movementSpeed * movementSpeedMultiplier);
             
             // Calculate movement direction
             _currentDirection = _targetTransform.position - transform.position;
