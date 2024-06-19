@@ -75,7 +75,7 @@ public class Game : MonoBehaviour
     private void SpawnSnake()
     {
         // Instatiate snake in random position within board
-        var minOffsetFromBorder = 2f;
+        var minOffsetFromBorder = 4f;
         var spawnPosition = new Vector3(UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder), snakePrefab.transform.position.y, UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder));
         _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
         _snake.Init(SnakeMovementSpeed);
