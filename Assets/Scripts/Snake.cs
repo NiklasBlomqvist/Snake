@@ -97,6 +97,12 @@ public class Snake : MonoBehaviour
             EatTreat?.Invoke();
         }
 
+        var outsideOfBounds = other.GetComponent<OutsideOfBounds>();
+        if(outsideOfBounds != null)
+        {
+            GameOver?.Invoke();
+        }
+
         var collidedTail = other.GetComponent<Tail>();
         if(collidedTail != null)
         {
