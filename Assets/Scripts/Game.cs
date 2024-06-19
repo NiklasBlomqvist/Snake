@@ -24,15 +24,16 @@ public class Game : MonoBehaviour
 
     private const int BoardSize = 12; // Needs to be an even number.
 
-    private const float SnakeMovementSpeed = 5.0f;
+    private const int TailStartSize = 3;
 
-    private const float SnakeRotationSpeed = 450f;
+    private const float SnakeMovementSpeed = 4.0f;
+
+    private const float SnakeRotationSpeed = 400f;
 
     private const float SnakeSlowMotionTimeScale = 0.5f;
 
-    private const int TailStartSize = 3;
+    private const float SlowtimeDuration = 1f;
 
-    private const float SlowtimeDuration = 0.5f;
 
     private Snake _snake;
     private Treat _treat;
