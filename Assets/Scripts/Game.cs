@@ -118,13 +118,14 @@ public class Game : MonoBehaviour
     private void SpawnTreat()
     {
         var minOffsetFromBorder = 1f;
+        var minDistanceFromSnake = 1f;
         
         // random position that is not on the snake
         Vector3 spawnPosition;
         do
         {
             spawnPosition = new Vector3(UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder), treatPrefab.transform.position.y, UnityEngine.Random.Range(-_boardSize + minOffsetFromBorder, _boardSize - minOffsetFromBorder));
-        } while (Vector3.Distance(spawnPosition, _snake.transform.position) < 1f);
+        } while (_snake.GetSnakeTransforms().Exists(s => Vector3.Distance(spawnPosition, s.position) < minDistanceFromSnake));
         
         _treat = Instantiate(treatPrefab, spawnPosition, Quaternion.identity).GetComponent<Treat>();
     }

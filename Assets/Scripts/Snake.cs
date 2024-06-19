@@ -15,6 +15,7 @@ public class Snake : MonoBehaviour
 
     private int _tailStartSize = 5;
 
+    private List<Transform> _snakeTransform = new List<Transform>();
     private List<Tail> _tails = new List<Tail>();
 
     private Transform _previousTail;
@@ -24,6 +25,9 @@ public class Snake : MonoBehaviour
     public void Init(float movementSpeed)
     {
         _movementSpeed = movementSpeed;
+        
+        _snakeTransform.Add(transform); // Add head to snake positions.
+
         GrowSnake(_tailStartSize);
     }
 
@@ -42,6 +46,7 @@ public class Snake : MonoBehaviour
             var tail = Instantiate(snakeTailPrefab, _previousTail.position, Quaternion.identity, _tailTransform).GetComponent<Tail>();
             tail.Init(_previousTail, _movementSpeed);
             _tails.Add(tail);
+            _snakeTransform.Add(tail.transform);
             _previousTail = tail.transform;
         }
     }
@@ -67,6 +72,11 @@ public class Snake : MonoBehaviour
     public List<Tail> GetTails()
     {
         return _tails;
+    }
+    
+    public List<Transform> GetSnakeTransforms()
+    {
+        return _snakeTransform;
     }
 
     /// <summary>
