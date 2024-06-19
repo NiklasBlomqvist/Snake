@@ -14,12 +14,15 @@ public class Game : MonoBehaviour
     private Overlay overlay;
 
     [SerializeField]
+    private Board board;
+
+    [SerializeField]
     private GameObject snakePrefab;
 
     [SerializeField]
     private GameObject treatPrefab;
 
-    private const int BoardSize = 5;
+    private const int BoardSize = 12; // Needs to be an even number.
 
     private const float SnakeMovementSpeed = 5.0f;
 
@@ -40,6 +43,11 @@ public class Game : MonoBehaviour
     private Coroutine _gameOverCoroutine;
     private float _slowTimeUsed;
     private bool _slowTimeActive;
+
+    void Awake()
+    {
+        board.SetSize(BoardSize);        
+    }
 
     void Start()
     {
@@ -123,7 +131,7 @@ public class Game : MonoBehaviour
     {
         // Instatiate snake in random position within board
         var minOffsetFromBorder = 4f;
-        var spawnPosition = new Vector3(UnityEngine.Random.Range(-BoardSize + minOffsetFromBorder, BoardSize - minOffsetFromBorder), snakePrefab.transform.position.y, UnityEngine.Random.Range(-BoardSize + minOffsetFromBorder, BoardSize - minOffsetFromBorder));
+        var spawnPosition = new Vector3(UnityEngine.Random.Range(-BoardSize/2 + minOffsetFromBorder, BoardSize/2 - minOffsetFromBorder), snakePrefab.transform.position.y, UnityEngine.Random.Range(-BoardSize/2 + minOffsetFromBorder, BoardSize/2 - minOffsetFromBorder));
         _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
         _snake.Init(SnakeMovementSpeed, SnakeRotationSpeed, TailStartSize);
         _snake.GameOver += OnGameOver;
@@ -171,7 +179,7 @@ public class Game : MonoBehaviour
         Vector3 spawnPosition;
         do
         {
-            spawnPosition = new Vector3(UnityEngine.Random.Range(-BoardSize + minOffsetFromBorder, BoardSize - minOffsetFromBorder), treatPrefab.transform.position.y, UnityEngine.Random.Range(-BoardSize + minOffsetFromBorder, BoardSize - minOffsetFromBorder));
+            spawnPosition = new Vector3(UnityEngine.Random.Range(-BoardSize/2 + minOffsetFromBorder, BoardSize/2 - minOffsetFromBorder), treatPrefab.transform.position.y, UnityEngine.Random.Range(-BoardSize/2 + minOffsetFromBorder, BoardSize/2 - minOffsetFromBorder));
         } while (_snake.GetSnakeTransforms().Exists(s => Vector3.Distance(spawnPosition, s.position) < minDistanceFromSnake));
         
         _treat = Instantiate(treatPrefab, spawnPosition, Quaternion.identity).GetComponent<Treat>();
