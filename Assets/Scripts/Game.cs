@@ -24,7 +24,7 @@ public class Game : MonoBehaviour
 
     private const float SnakeSlowMotionTimeScale = 0.5f;
 
-    private const int TailStartSize = 5;
+    private const int TailStartSize = 3;
 
     private Snake _snake;
     private Treat _treat;
