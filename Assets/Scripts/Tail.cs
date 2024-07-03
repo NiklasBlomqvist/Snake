@@ -23,6 +23,7 @@ public class Tail : MonoBehaviour
             
             // Calculate movement direction
             _currentDirection = _targetTransform.position - transform.position;
+            transform.LookAt(_targetTransform);
         }
         else 
         {
