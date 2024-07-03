@@ -77,7 +77,7 @@ public class Game : MonoBehaviour
     private void HandleInput()
     {
         // Pause game.
-        if (!_gameOver && _gameStarted && Input.GetKeyDown(KeyCode.Escape))
+        if (!_gameOver && _gameStarted && Input.GetKeyDown(KeyCode.P))
         {
             _gamePaused = !_gamePaused;
             if (_gamePaused)

@@ -15,11 +15,11 @@ public class Menu : MonoBehaviour
 
     private Canvas _menuCanvas;
 
-    private string _pauseMessage = "Game Paused, Press ESC to resume.";
+    private string _pauseMessage = "Game Paused, Press 'P' to resume.";
 
-    private string _startMessage = "Press SPACE to start a new game.";
+    private string _startMessage = "Press 'Space' to start a new game.\n\nMovement: Arrow keys '<' and '>'.\nSlow Time: Hold 'Space'.\nPause: Press 'P'.";
 
-    private string _gameOverMessage = "Game Over - Press SPACE to start a new game.";
+    private string _gameOverMessage = "Game Over!\n\nPress 'Space' to start a new game.";
 
     void Awake()
     {
