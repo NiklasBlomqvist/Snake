@@ -23,13 +23,13 @@ public class Game : MonoBehaviour
 
     private const int TailStartSize = 3;
 
-    private const float SnakeMovementSpeed = 4.0f;
+    private const float SnakeMovementSpeed = 4.5f;
 
-    private const float SnakeRotationSpeed = 400f;
+    private const float SnakeRotationSpeed = 380f;
 
     private const float SnakeSlowMotionTimeScale = 0.5f;
 
-    private const float SlowtimeDuration = 1f;
+    private const float SlowtimeDuration = 1.5f;
 
 
     private Snake _snake;
