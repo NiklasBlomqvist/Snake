@@ -22,6 +22,8 @@ public class Game : MonoBehaviour
 
     private const int TailStartSize = 3;
 
+    private const int IgnoreTailCollision = 10;
+
     private const float SnakeMovementSpeed = 4.5f;
 
     private const float SnakeRotationSpeed = 380f;
@@ -123,7 +125,7 @@ public class Game : MonoBehaviour
     {
         var spawnPosition = GetRandomSpawnPosition();
         _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
-        _snake.Init(SnakeMovementSpeed, SnakeRotationSpeed, TailStartSize);
+        _snake.Init(SnakeMovementSpeed, SnakeRotationSpeed, TailStartSize, IgnoreTailCollision);
         _snake.GameOver += OnGameOver;
         _snake.EatTreat += OnEatTreat;
     }

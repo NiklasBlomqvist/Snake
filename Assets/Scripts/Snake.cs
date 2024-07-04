@@ -19,12 +19,14 @@ public class Snake : MonoBehaviour
     private float _movementSpeed;
     private float _rotationSpeed;
     private int _tailStartSize;
+    private int _ignoreTailCollision;
 
-    public void Init(float movementSpeed, float rotationSpeed, int tailStartSize)
+    public void Init(float movementSpeed, float rotationSpeed, int tailStartSize, int ignoreTailCollision)
     {
         _movementSpeed = movementSpeed;
         _rotationSpeed = rotationSpeed;
         _tailStartSize = tailStartSize;
+        _ignoreTailCollision = ignoreTailCollision;
 
         _snakeTransform.Add(transform); // Add head to snake positions.
 
@@ -95,6 +97,7 @@ public class Snake : MonoBehaviour
 
         if(other.TryGetComponent<OutsideOfBounds>(out var outsideOfBounds))
         {
+            Debug.LogError("Out of bounds.");
             GameOver?.Invoke();
         }
 
@@ -104,12 +107,13 @@ public class Snake : MonoBehaviour
             for (int i = 0; i < _tails.Count; i++)
             {
                 var tail = _tails[i];
-                if(i <= _tailStartSize)
+                if(i <= _ignoreTailCollision)
                 {
                     continue;
                 }
                 else if(tail == collidedTail)
                 {
+                    Debug.LogError("Collision with tail.");
                     GameOver?.Invoke();
                     break;
                 }
