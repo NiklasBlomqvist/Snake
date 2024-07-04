@@ -22,11 +22,11 @@ public class Game : MonoBehaviour
 
     private const int TailStartSize = 3;
 
-    private const int IgnoreTailCollision = 10;
+    private const int IgnoreTailCollision = 12;
 
     private const float SnakeMovementSpeed = 4.5f;
 
-    private const float SnakeRotationSpeed = 380f;
+    private const float SnakeRotationSpeed = 320f;
 
     private const float SnakeSlowMotionTimeScale = 0.5f;
 
