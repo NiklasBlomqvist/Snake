@@ -1,8 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class Game : MonoBehaviour
 {
@@ -14,12 +12,13 @@ public class Game : MonoBehaviour
     private Overlay overlay;
 
     [SerializeField]
+    private Transform SpawnPositions;
+
+    [SerializeField]
     private GameObject snakePrefab;
 
     [SerializeField]
     private GameObject treatPrefab;
-
-    private const int BoardSize = 12; 
 
     private const int TailStartSize = 3;
 
@@ -122,9 +121,7 @@ public class Game : MonoBehaviour
 
     private void SpawnSnake()
     {
-        // Instatiate snake in random position within board
-        var minOffsetFromBorder = 4f;
-        var spawnPosition = new Vector3(UnityEngine.Random.Range(-BoardSize/2 + minOffsetFromBorder, BoardSize/2 - minOffsetFromBorder), snakePrefab.transform.position.y, UnityEngine.Random.Range(-BoardSize/2 + minOffsetFromBorder, BoardSize/2 - minOffsetFromBorder));
+        var spawnPosition = GetRandomSpawnPosition();
         _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
         _snake.Init(SnakeMovementSpeed, SnakeRotationSpeed, TailStartSize);
         _snake.GameOver += OnGameOver;
@@ -165,16 +162,23 @@ public class Game : MonoBehaviour
 
     private void SpawnTreat()
     {
-        var minOffsetFromBorder = 1f;
         var minDistanceFromSnake = 1f;
         
         // random position that is not on the snake
         Vector3 spawnPosition;
         do
         {
-            spawnPosition = new Vector3(UnityEngine.Random.Range(-BoardSize/2 + minOffsetFromBorder, BoardSize/2 - minOffsetFromBorder), treatPrefab.transform.position.y, UnityEngine.Random.Range(-BoardSize/2 + minOffsetFromBorder, BoardSize/2 - minOffsetFromBorder));
+            spawnPosition = GetRandomSpawnPosition();
         } while (_snake.GetSnakeTransforms().Exists(s => Vector3.Distance(spawnPosition, s.position) < minDistanceFromSnake));
         
         _treat = Instantiate(treatPrefab, spawnPosition, Quaternion.identity).GetComponent<Treat>();
     }
+
+    private Vector3 GetRandomSpawnPosition() 
+    {
+        var numberOfSpawns = SpawnPositions.childCount;
+        var randomChildIndex = Random.Range(0, numberOfSpawns);
+        return SpawnPositions.GetChild(randomChildIndex).position;
+    }
+
 }
