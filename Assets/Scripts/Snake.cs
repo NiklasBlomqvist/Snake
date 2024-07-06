@@ -30,10 +30,10 @@ public class Snake : MonoBehaviour
 
         _snakeTransform.Add(transform); // Add head to snake positions.
 
-        GrowSnake(_tailStartSize);
+        GrowSnake(_tailStartSize, Color.white);
     }
 
-    private void GrowSnake(float growSize)
+    public void GrowSnake(float growSize, Color color)
     {
         if(_previousTail == null) 
         {
@@ -46,7 +46,7 @@ public class Snake : MonoBehaviour
         for (int i = 0; i < growSize; i++)
         {
             var tail = Instantiate(snakeTailPrefab, _previousTail.position, Quaternion.identity, _tailTransform).GetComponent<Tail>();
-            tail.Init(_previousTail, _movementSpeed);
+            tail.Init(_previousTail, _movementSpeed, color);
             _tails.Add(tail);
             _snakeTransform.Add(tail.transform);
             _previousTail = tail.transform;
@@ -86,9 +86,6 @@ public class Snake : MonoBehaviour
         var treat = other.GetComponentInParent<Treat>();
         if(treat != null)
         {
-            // Grow snake
-            GrowSnake(1);
-
             EatTreat?.Invoke(treat);
         }
 

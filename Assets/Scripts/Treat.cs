@@ -43,4 +43,19 @@ public class Treat : MonoBehaviour
                 break;
         }
     }
+
+    public Color GetColor()
+    {
+        switch(CurrentColor)
+        {
+            case TreatColor.Red:
+                return Color.red;
+            case TreatColor.Green:
+                return Color.green;
+            case TreatColor.Blue:
+                return Color.blue;
+        }
+
+        return Color.white;
+    }
 }

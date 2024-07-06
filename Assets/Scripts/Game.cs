@@ -20,7 +20,7 @@ public class Game : MonoBehaviour
     [SerializeField]
     private GameObject treatPrefab;
 
-    private const int TailStartSize = 10;
+    private const int TailStartSize = 3;
 
     private const int IgnoreTailCollision = 12;
 
@@ -175,6 +175,9 @@ public class Game : MonoBehaviour
 
     private void OnEatTreat(Treat treat)
     {
+        // Grow snake
+        _snake.GrowSnake(1, treat.GetColor());
+
         _treats.Remove(treat);
         SpawnTreat(treat.CurrentColor);
         treat.CurrentSpawnPosition.IsOccupied = false;
