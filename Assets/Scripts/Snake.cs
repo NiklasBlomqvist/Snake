@@ -8,7 +8,7 @@ public class Snake : MonoBehaviour
     [SerializeField]
     private GameObject snakeTailPrefab;
 
-    public Action EatTreat;
+    public Action<Treat> EatTreat;
     public Action GameOver;
 
     private List<Transform> _snakeTransform = new List<Transform>();
@@ -86,13 +86,10 @@ public class Snake : MonoBehaviour
         var treat = other.GetComponentInParent<Treat>();
         if(treat != null)
         {
-            // Destroy treat
-            Destroy(treat.gameObject);
-
             // Grow snake
             GrowSnake(1);
 
-            EatTreat?.Invoke();
+            EatTreat?.Invoke(treat);
         }
 
         if(other.TryGetComponent<OutsideOfBounds>(out var outsideOfBounds))

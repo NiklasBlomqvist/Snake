@@ -12,7 +12,7 @@ public class Game : MonoBehaviour
     private Overlay overlay;
 
     [SerializeField]
-    private Transform SpawnPositions;
+    private Transform SpawnPositionsParent;
 
     [SerializeField]
     private GameObject snakePrefab;
@@ -20,7 +20,7 @@ public class Game : MonoBehaviour
     [SerializeField]
     private GameObject treatPrefab;
 
-    private const int TailStartSize = 3;
+    private const int TailStartSize = 10;
 
     private const int IgnoreTailCollision = 12;
 
@@ -34,7 +34,7 @@ public class Game : MonoBehaviour
 
 
     private Snake _snake;
-    private Treat _treat;
+    private List<Treat> _treats = new();
 
     private bool _gamePaused;
     private bool _gameOver;
@@ -42,6 +42,16 @@ public class Game : MonoBehaviour
     private Coroutine _gameOverCoroutine;
     private float _slowTimeUsed;
     private bool _slowTimeActive;
+    private List<SpawnPosition> _spawnPositions;
+
+    void Awake()
+    {
+        _spawnPositions = new List<SpawnPosition>();
+        for (int i = 0; i < SpawnPositionsParent.childCount; i++)
+        {
+            _spawnPositions.Add(SpawnPositionsParent.GetChild(i).GetComponent<SpawnPosition>());
+        }
+    }
 
     void Start()
     {
@@ -118,12 +128,14 @@ public class Game : MonoBehaviour
         _gameOver = false;
         _gameStarted = true;
         SpawnSnake();
-        SpawnTreat();
+        SpawnTreat(Treat.TreatColor.Red);
+        SpawnTreat(Treat.TreatColor.Green);
+        SpawnTreat(Treat.TreatColor.Blue);
     }
 
     private void SpawnSnake()
     {
-        var spawnPosition = GetRandomSpawnPosition();
+        var spawnPosition = new Vector3(0, 1f, 0);
         _snake = Instantiate(snakePrefab, spawnPosition, Quaternion.identity).GetComponent<Snake>();
         _snake.Init(SnakeMovementSpeed, SnakeRotationSpeed, TailStartSize, IgnoreTailCollision);
         _snake.GameOver += OnGameOver;
@@ -139,13 +151,17 @@ public class Game : MonoBehaviour
 
         var tails = _snake.GetTails();
 
-        _gameOverCoroutine = StartCoroutine(GameOverRoutine(tails, _snake, _treat));
+        _gameOverCoroutine = StartCoroutine(GameOverRoutine(tails, _snake, _treats));
     }
 
-    private IEnumerator GameOverRoutine(List<Tail> tails, Snake snake, Treat treat)
+    private IEnumerator GameOverRoutine(List<Tail> tails, Snake snake, List<Treat> treats)
     {
         Destroy(snake.gameObject);
-        Destroy(treat.gameObject);
+
+        foreach (var treat in treats)
+        {
+            Destroy(treat.gameObject);
+        }
 
         foreach (var tail in tails)
         {
@@ -157,30 +173,42 @@ public class Game : MonoBehaviour
         _gameOverCoroutine = null;
     }
 
-    private void OnEatTreat()
+    private void OnEatTreat(Treat treat)
     {
-        SpawnTreat();
+        _treats.Remove(treat);
+        SpawnTreat(treat.CurrentColor);
+        treat.CurrentSpawnPosition.IsOccupied = false;
+
+        Destroy(treat.gameObject);
     }
 
-    private void SpawnTreat()
+    private void SpawnTreat(Treat.TreatColor treatColor)
     {
-        var minDistanceFromSnake = 1f;
-        
-        // random position that is not on the snake
-        Vector3 spawnPosition;
-        do
+        var ranmdomSpawnPosition = GetRandomSpawnPosition();
+        var treat = Instantiate(treatPrefab, ranmdomSpawnPosition.transform.position, Quaternion.identity).GetComponent<Treat>();
+        treat.SetColor(treatColor);
+        treat.SetSpawnPosition(ranmdomSpawnPosition);
+        ranmdomSpawnPosition.IsOccupied = true;
+        _treats.Add(treat);
+    }
+
+    private SpawnPosition GetRandomSpawnPosition() 
+    {
+        // Get all available spawn positions.
+        var availableSpawnPositions = _spawnPositions.FindAll(sp => !sp.IsOccupied);
+
+        // Create list of all available spawn positions that is not close to the snake.
+        var minDistanceFromSnake = 1.5f;
+        var snakeTailPositions = _snake.GetSnakeTransforms();
+        foreach (var tail in snakeTailPositions)
         {
-            spawnPosition = GetRandomSpawnPosition();
-        } while (_snake.GetSnakeTransforms().Exists(s => Vector3.Distance(spawnPosition, s.position) < minDistanceFromSnake));
-        
-        _treat = Instantiate(treatPrefab, spawnPosition, Quaternion.identity).GetComponent<Treat>();
-    }
+            availableSpawnPositions = availableSpawnPositions.FindAll(sp => Vector3.Distance(sp.transform.position, tail.position) > minDistanceFromSnake);
+        }
 
-    private Vector3 GetRandomSpawnPosition() 
-    {
-        var numberOfSpawns = SpawnPositions.childCount;
-        var randomChildIndex = Random.Range(0, numberOfSpawns);
-        return SpawnPositions.GetChild(randomChildIndex).position;
-    }
+        // Get random spawn position from available spawn positions.
+        var randomIndex = Random.Range(0, availableSpawnPositions.Count);
+        var randomSpawnPosition = availableSpawnPositions[randomIndex];
 
+        return randomSpawnPosition;
+    }
 }
