@@ -4,13 +4,24 @@ public class Tail : MonoBehaviour
 {
     private Transform _targetTransform;
     private float _movementSpeed;
+    private Color _color;
     private Vector3 _currentDirection;
 
     public void Init(Transform targetTransform, float movementSpeed, Color color)
     {
         _targetTransform = targetTransform;
         _movementSpeed = movementSpeed;
-        GetComponentInChildren<Renderer>().material.SetColor("_BaseColor", color);
+        
+        _color = color;
+        foreach (var renderer in GetComponentsInChildren<Renderer>())
+        {
+            renderer.material.SetColor("_BaseColor", color);
+        }
+    }
+
+    public Color GetColor() 
+    {
+        return _color;
     }
 
     void Update()

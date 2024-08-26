@@ -20,6 +20,9 @@ public class Game : MonoBehaviour
     [SerializeField]
     private GameObject treatPrefab;
 
+    [SerializeField]
+    private GameObject pupaePrefab;
+
     private const int TailStartSize = 3;
 
     private const int IgnoreTailCollision = 12;
@@ -28,11 +31,6 @@ public class Game : MonoBehaviour
 
     private const float SnakeRotationSpeed = 320f;
 
-    private const float SnakeSlowMotionTimeScale = 0.5f;
-
-    private const float SlowtimeDuration = 1.5f;
-
-
     private Snake _snake;
     private List<Treat> _treats = new();
 
@@ -40,9 +38,11 @@ public class Game : MonoBehaviour
     private bool _gameOver;
     private bool _gameStarted;
     private Coroutine _gameOverCoroutine;
-    private float _slowTimeUsed;
-    private bool _slowTimeActive;
+    private float _transformTimeAdded;
+    private bool _transformToPupae;
     private List<SpawnPosition> _spawnPositions;
+    private bool _becomeButterfly;
+    private bool gamePupaePhase;
 
     void Awake()
     {
@@ -57,30 +57,59 @@ public class Game : MonoBehaviour
     {
         mainMenu.StartMenu();
     }
-     
+
     private void Update()
     {
-        if(_gameOverCoroutine != null)
+        if (_gameOverCoroutine != null)
             return;
+
+        if(gamePupaePhase)
+        {
+            return;
+        }
 
         HandleInput();
 
-        if(_slowTimeActive)
+        // Handle transform to butterfly.
+        if (_becomeButterfly)
         {
-            _slowTimeUsed += Time.deltaTime;
-            overlay.SetFill(1 - (_slowTimeUsed / SlowtimeDuration));
+            // Spawn pupae.
+            var pupae = Instantiate(pupaePrefab, _snake.transform.position, Quaternion.identity).GetComponent<Pupae>();
+            pupae.Init(_snake.GetTails().ConvertAll(tail => tail.GetColor()));
 
-            if(_slowTimeUsed >= SlowtimeDuration)
+            // Destroy snake and tails.
+            var tails = _snake.GetTails();
+            Destroy(_snake.gameObject);
+            _snake = null;
+            foreach (var tail in tails)
             {
-                SlowTime(false);
+                Destroy(tail.gameObject);
             }
+
+            // Enter pupae phase of the game.
+            gamePupaePhase = true;
         }
-        else 
+        else
         {
-            if(_slowTimeUsed > 0f) 
+            if (_transformToPupae)
             {
-                _slowTimeUsed -= Time.deltaTime;
-                overlay.SetFill(1 - (_slowTimeUsed / SlowtimeDuration));
+                if (_transformTimeAdded < 1f)
+                    _transformTimeAdded += Time.deltaTime;
+
+                if (_transformTimeAdded >= 1f)
+                {
+                    _becomeButterfly = true;
+                }
+
+                overlay.SetFill(_transformTimeAdded);
+            }
+            else
+            {
+                if (_transformTimeAdded > 0f)
+                {
+                    _transformTimeAdded -= Time.deltaTime;
+                    overlay.SetFill(_transformTimeAdded);
+                }
             }
         }
     }
@@ -100,14 +129,14 @@ public class Game : MonoBehaviour
                 mainMenu.HideMenu();
             }
         }
-        // Slow Time
-        else if(!mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
+        // Transform to pupae.
+        else if (!mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
         {
-            SlowTime(true);
+            _transformToPupae = true;
         }
-        else if(!mainMenu.IsMenuActive && Input.GetKeyUp(KeyCode.Space)) 
+        else if (!mainMenu.IsMenuActive && Input.GetKeyUp(KeyCode.Space))
         {
-            SlowTime(false);
+            _transformToPupae = false;
         }
         // Start game.
         else if (!_gamePaused && mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
@@ -117,13 +146,7 @@ public class Game : MonoBehaviour
         }
     }
 
-    private void SlowTime(bool slowTimeActive)
-    {
-        _slowTimeActive = slowTimeActive;
-        Time.timeScale = slowTimeActive ? SnakeSlowMotionTimeScale : 1f;
-    }
-
-    public void StartGame() 
+    public void StartGame()
     {
         _gameOver = false;
         _gameStarted = true;
@@ -195,7 +218,7 @@ public class Game : MonoBehaviour
         _treats.Add(treat);
     }
 
-    private SpawnPosition GetRandomSpawnPosition() 
+    private SpawnPosition GetRandomSpawnPosition()
     {
         // Get all available spawn positions.
         var availableSpawnPositions = _spawnPositions.FindAll(sp => !sp.IsOccupied);
