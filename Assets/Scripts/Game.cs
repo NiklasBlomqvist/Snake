@@ -23,6 +23,9 @@ public class Game : MonoBehaviour
     [SerializeField]
     private GameObject pupaePrefab;
 
+    [SerializeField]
+    private GameObject butterflyPrefab;
+
     private const int TailStartSize = 3;
 
     private const int IgnoreTailCollision = 12;
@@ -32,6 +35,8 @@ public class Game : MonoBehaviour
     private const float SnakeRotationSpeed = 320f;
 
     private const float OverlaySliderMultiplier = 2.0f;
+
+    private const int  PupaeKnocksToTurnIntoButterfly = 3;
 
     private enum GameState
     {
@@ -43,16 +48,16 @@ public class Game : MonoBehaviour
     private Snake _snake;
     private List<Treat> _treats = new();
     private GameState _currentGameState;
-
+    private Pupae _pupae;
+    private Butterfly _butterfly;
     private bool _gamePaused;
     private bool _gameOver;
     private bool _gameStarted;
     private Coroutine _gameOverCoroutine;
     private List<SpawnPosition> _spawnPositions;
     private float _overlaySliderValue;
-
-
-
+    private int _pupaeKnocks;
+    
     void Awake()
     {
         _spawnPositions = new List<SpawnPosition>();
@@ -79,7 +84,7 @@ public class Game : MonoBehaviour
 
     private void UpdateOverlay()
     {
-        if(_currentGameState == GameState.Larvae)
+        if (_currentGameState == GameState.Larvae)
             overlay.SetFill(_overlaySliderValue);
     }
 
@@ -88,8 +93,8 @@ public class Game : MonoBehaviour
         _currentGameState = GameState.Pupae;
 
         // Spawn pupae.
-        var pupae = Instantiate(pupaePrefab, _snake.transform.position, Quaternion.identity).GetComponent<Pupae>();
-        pupae.Init(_snake.GetTails().ConvertAll(tail => tail.GetColor()));
+        _pupae = Instantiate(pupaePrefab, _snake.transform.position, Quaternion.identity).GetComponent<Pupae>();
+        _pupae.Init(_snake.GetTails().ConvertAll(tail => tail.GetColor()));
 
         // Destroy snake and tails.
         var tails = _snake.GetTails();
@@ -99,6 +104,17 @@ public class Game : MonoBehaviour
         {
             Destroy(tail.gameObject);
         }
+    }
+
+    private void TransformIntoButterfly()
+    {
+        _currentGameState = GameState.Butterfly;
+
+        // Spawn butterfly.
+        _butterfly = Instantiate(butterflyPrefab, _pupae.transform.position, butterflyPrefab.transform.rotation).GetComponent<Butterfly>();
+
+        // Destroy pupae.
+        Destroy(_pupae.gameObject);
     }
 
     private void HandleInput()
@@ -124,21 +140,40 @@ public class Game : MonoBehaviour
             }
         }
 
-        // Overlay slider.
-        if (!mainMenu.IsMenuActive && Input.GetKey(KeyCode.Space))
+        // Space key to transform into pupae.
+        if (!mainMenu.IsMenuActive && _currentGameState == GameState.Larvae)
         {
-            _overlaySliderValue = Mathf.Clamp(_overlaySliderValue += Time.deltaTime * OverlaySliderMultiplier, 0, 1);
+            if (Input.GetKey(KeyCode.Space))
+            {
+                _overlaySliderValue = Mathf.Clamp(_overlaySliderValue += Time.deltaTime * OverlaySliderMultiplier, 0, 1);
+            }
+            else 
+            {
+                _overlaySliderValue = Mathf.Clamp(_overlaySliderValue -= Time.deltaTime * OverlaySliderMultiplier, 0, 1);
+            }
+
+            if (_overlaySliderValue >= 1)
+            {
+                TransformIntoPupae();
+            }
         }
-        else if (!mainMenu.IsMenuActive && !Input.GetKey(KeyCode.Space))
+        if(!mainMenu.IsMenuActive && _currentGameState == GameState.Pupae) 
         {
-            _overlaySliderValue = Mathf.Clamp(_overlaySliderValue -= Time.deltaTime * OverlaySliderMultiplier, 0, 1);
+            if(Input.GetKeyDown(KeyCode.Space)) 
+            {
+                _pupae.Knock();
+                _pupaeKnocks++;
+
+                if(_pupaeKnocks >= PupaeKnocksToTurnIntoButterfly) 
+                {
+                    TransformIntoButterfly();
+                }
+            }
         }
 
-        if(_currentGameState == GameState.Larvae && _overlaySliderValue >= 1)
-        {
-            TransformIntoPupae();
-        }
     }
+
+
 
     public void StartGame()
     {

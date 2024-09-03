@@ -1773,6 +1773,7 @@ MonoBehaviour:
   snakePrefab: {fileID: 6820443804144897520, guid: ff90aa58389370c4293f7c9d60b0bf74, type: 3}
   treatPrefab: {fileID: 4365275136121882647, guid: 2db619330e40ea642bbc381aeb3175f4, type: 3}
   pupaePrefab: {fileID: 1837462844197056206, guid: 256086b16c82efb4f885048d5759d5f8, type: 3}
+  butterflyPrefab: {fileID: 940121633231425733, guid: 93881e20478cb044896509c9223eeb76, type: 3}
 --- !u!1 &873229984
 GameObject:
   m_ObjectHideFlags: 0
