@@ -112,6 +112,14 @@ public class Game : MonoBehaviour
 
         // Spawn butterfly.
         _butterfly = Instantiate(butterflyPrefab, _pupae.transform.position, butterflyPrefab.transform.rotation).GetComponent<Butterfly>();
+        _butterfly.OnButterflyDissapeared += () =>
+        {
+            _currentGameState = GameState.Larvae;
+            _pupaeKnocks = 0;
+            _gameOver = true;
+            _gameStarted = false;
+            mainMenu.GameOverMenu();
+        };
 
         // Destroy pupae.
         Destroy(_pupae.gameObject);
@@ -155,6 +163,7 @@ public class Game : MonoBehaviour
             if (_overlaySliderValue >= 1)
             {
                 TransformIntoPupae();
+                _overlaySliderValue = 0f;
             }
         }
         if(!mainMenu.IsMenuActive && _currentGameState == GameState.Pupae) 
@@ -173,13 +182,18 @@ public class Game : MonoBehaviour
 
     }
 
-
-
     public void StartGame()
     {
         _gameOver = false;
         _gameStarted = true;
         SpawnSnake();
+
+        foreach (var treat in _treats)
+        {
+            Destroy(treat.gameObject);
+        }
+        _treats = new();
+
         SpawnTreat(Treat.TreatColor.Red);
         SpawnTreat(Treat.TreatColor.Green);
         SpawnTreat(Treat.TreatColor.Blue);
@@ -209,11 +223,6 @@ public class Game : MonoBehaviour
     private IEnumerator GameOverRoutine(List<Tail> tails, Snake snake, List<Treat> treats)
     {
         Destroy(snake.gameObject);
-
-        foreach (var treat in treats)
-        {
-            Destroy(treat.gameObject);
-        }
 
         foreach (var tail in tails)
         {

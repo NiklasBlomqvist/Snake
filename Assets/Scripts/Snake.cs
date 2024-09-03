@@ -40,7 +40,8 @@ public class Snake : MonoBehaviour
             _previousTail = transform;
             
             // Create empy game object to hold the tail.
-            _tailTransform = new GameObject("Tail").transform;
+            var tailParent = GameObject.Find("Tail");
+            _tailTransform = tailParent != null ? tailParent.transform : new GameObject("Tail").transform;
         }
 
         for (int i = 0; i < growSize; i++)
