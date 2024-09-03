@@ -17,9 +17,9 @@ public class Menu : MonoBehaviour
 
     private string _pauseMessage = "Game Paused, Press 'P' to resume.";
 
-    private string _startMessage = "Press 'Space' to start a new game.\n\nMovement: Arrow keys '<' and '>'.\nSlow Time: Hold 'Space'.\nPause: Press 'P'.";
+    private string _startMessage = "Press 'Return' to start a new game.\n\nMovement: Arrow keys '<' and '>'.\nTransform key: 'Space'.\nPause: Press 'P'.";
 
-    private string _gameOverMessage = "Game Over!\n\nPress 'Space' to start a new game.";
+    private string _gameOverMessage = "Game Over!\n\nPress 'Return' to start a new game.";
 
     void Awake()
     {

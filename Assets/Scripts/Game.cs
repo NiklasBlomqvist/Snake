@@ -31,18 +31,27 @@ public class Game : MonoBehaviour
 
     private const float SnakeRotationSpeed = 320f;
 
+    private const float OverlaySliderMultiplier = 2.0f;
+
+    private enum GameState
+    {
+        Larvae,
+        Pupae,
+        Butterfly
+    }
+
     private Snake _snake;
     private List<Treat> _treats = new();
+    private GameState _currentGameState;
 
     private bool _gamePaused;
     private bool _gameOver;
     private bool _gameStarted;
     private Coroutine _gameOverCoroutine;
-    private float _transformTimeAdded;
-    private bool _transformToPupae;
     private List<SpawnPosition> _spawnPositions;
-    private bool _becomeButterfly;
-    private bool gamePupaePhase;
+    private float _overlaySliderValue;
+
+
 
     void Awake()
     {
@@ -63,59 +72,44 @@ public class Game : MonoBehaviour
         if (_gameOverCoroutine != null)
             return;
 
-        if(gamePupaePhase)
-        {
-            return;
-        }
-
         HandleInput();
 
-        // Handle transform to butterfly.
-        if (_becomeButterfly)
+        UpdateOverlay();
+    }
+
+    private void UpdateOverlay()
+    {
+        if(_currentGameState == GameState.Larvae)
+            overlay.SetFill(_overlaySliderValue);
+    }
+
+    private void TransformIntoPupae()
+    {
+        _currentGameState = GameState.Pupae;
+
+        // Spawn pupae.
+        var pupae = Instantiate(pupaePrefab, _snake.transform.position, Quaternion.identity).GetComponent<Pupae>();
+        pupae.Init(_snake.GetTails().ConvertAll(tail => tail.GetColor()));
+
+        // Destroy snake and tails.
+        var tails = _snake.GetTails();
+        Destroy(_snake.gameObject);
+        _snake = null;
+        foreach (var tail in tails)
         {
-            // Spawn pupae.
-            var pupae = Instantiate(pupaePrefab, _snake.transform.position, Quaternion.identity).GetComponent<Pupae>();
-            pupae.Init(_snake.GetTails().ConvertAll(tail => tail.GetColor()));
-
-            // Destroy snake and tails.
-            var tails = _snake.GetTails();
-            Destroy(_snake.gameObject);
-            _snake = null;
-            foreach (var tail in tails)
-            {
-                Destroy(tail.gameObject);
-            }
-
-            // Enter pupae phase of the game.
-            gamePupaePhase = true;
-        }
-        else
-        {
-            if (_transformToPupae)
-            {
-                if (_transformTimeAdded < 1f)
-                    _transformTimeAdded += Time.deltaTime;
-
-                if (_transformTimeAdded >= 1f)
-                {
-                    _becomeButterfly = true;
-                }
-
-                overlay.SetFill(_transformTimeAdded);
-            }
-            else
-            {
-                if (_transformTimeAdded > 0f)
-                {
-                    _transformTimeAdded -= Time.deltaTime;
-                    overlay.SetFill(_transformTimeAdded);
-                }
-            }
+            Destroy(tail.gameObject);
         }
     }
 
     private void HandleInput()
     {
+        // Start game.
+        if (!_gamePaused && mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Return))
+        {
+            StartGame();
+            mainMenu.HideMenu();
+        }
+
         // Pause game.
         if (!_gameOver && _gameStarted && Input.GetKeyDown(KeyCode.P))
         {
@@ -129,20 +123,20 @@ public class Game : MonoBehaviour
                 mainMenu.HideMenu();
             }
         }
-        // Transform to pupae.
-        else if (!mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
+
+        // Overlay slider.
+        if (!mainMenu.IsMenuActive && Input.GetKey(KeyCode.Space))
         {
-            _transformToPupae = true;
+            _overlaySliderValue = Mathf.Clamp(_overlaySliderValue += Time.deltaTime * OverlaySliderMultiplier, 0, 1);
         }
-        else if (!mainMenu.IsMenuActive && Input.GetKeyUp(KeyCode.Space))
+        else if (!mainMenu.IsMenuActive && !Input.GetKey(KeyCode.Space))
         {
-            _transformToPupae = false;
+            _overlaySliderValue = Mathf.Clamp(_overlaySliderValue -= Time.deltaTime * OverlaySliderMultiplier, 0, 1);
         }
-        // Start game.
-        else if (!_gamePaused && mainMenu.IsMenuActive && Input.GetKeyDown(KeyCode.Space))
+
+        if(_currentGameState == GameState.Larvae && _overlaySliderValue >= 1)
         {
-            StartGame();
-            mainMenu.HideMenu();
+            TransformIntoPupae();
         }
     }
 
